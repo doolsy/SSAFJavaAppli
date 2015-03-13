@@ -3,9 +3,9 @@ package JavaApp;
 import java.util.ArrayList;
 
 public abstract class Search {
-	private ArrayList<String> keywords;
-	private ArrayList<String> hashtags;
-	private String language;
+	protected ArrayList<String> keywords;
+	protected ArrayList<String> hashtags;
+	protected String language;
 	
 	public Search(){
 		keywords = new ArrayList<String>();

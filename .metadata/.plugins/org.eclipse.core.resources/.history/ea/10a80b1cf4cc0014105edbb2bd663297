@@ -1,0 +1,161 @@
+package JavaApp;
+
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue; 
+
+import java.io.FileReader;
+import java.util.Iterator;
+
+import org.json.simple.parser.JSONParser;
+
+import twitter4j.*;
+import twitter4j.auth.AccessToken;
+public class JDBCExample {
+
+	public static void main(String[] argv) throws TwitterException {
+
+		final String CONSUMER_KEY = "79Le46VDtImQBogLVkr97dmQr";
+		final String CONSUMER_SECRET = "7v6CkcUkcP7Ra9OiDOz84dKANkE9DrPIZbmtL2WCqvQdedDMtg";
+
+		final String ACCESS_TOKEN = "950171118-poLCn3nOTIRtb83KJjLS4zA4VVhyR0QSqpl72nVI";
+		final String ACCESS_TOKEN_SECRET = "tqzL8zmvE1VzYIDP5F7q3IUEOVOTm6k2vpTXN6Me4Y8Bt";
+		AccessToken aToken;
+		Twitter t = new TwitterFactory().getInstance();
+
+		// Connexion OAuth (http://oauth.net/) au compte Twitter
+
+		t.setOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
+		aToken = new AccessToken(ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
+		t.setOAuthAccessToken(aToken);
+
+//		JSONParser parser = new JSONParser();
+//
+//		String API="", compte="",language="",date="";
+//		JSONArray keywords,retweets, hour,answer_to,users,bounding_box;
+//
+//		Connection connexion = null;
+//		Statement stmt = null;
+//		try {
+//
+//			Object obj = parser.parse(new FileReader(
+//					"C:/xampp/htdocs/SSAFProject/Controlers/recherche.json"));
+//
+//			JSONObject jsonObject = (JSONObject) obj;
+//
+//			API = (String) jsonObject.get("API");
+//			compte = (String) jsonObject.get("compte_API");
+//			keywords = (JSONArray) jsonObject.get("keywords");
+//			language = (String) jsonObject.get("language");
+//			retweets = (JSONArray) jsonObject.get("retweets_from_to");
+//			date = (String)jsonObject.get("date");
+//			hour = (JSONArray) jsonObject.get("hour_from_to");
+//			answer_to = (JSONArray) jsonObject.get("answer_to");
+//			users = (JSONArray) jsonObject.get("users");
+//			bounding_box = (JSONArray) jsonObject.get("bounding_box");
+//
+//			Iterator<String> it1 = keywords.iterator();
+//			while (it1.hasNext()) {
+//				System.out.print(it1.next() + " ");
+//			}
+//
+//			System.out.println("\nlanguage:" + language );
+//			//			Iterator<Long> it2 = retweets.iterator();//verifier si c'est pas null
+//			//			while (it2.hasNext()) {
+//			//				System.out.print(it2.next());//ajouter a une liste
+//			//			}
+//			System.out.println("\nlanguage:" + date );
+//
+//		} 
+//		catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		if(API.equals("rest"))
+//		{
+//			try {
+//
+//				connexion = DriverManager.getConnection(
+//						"jdbc:postgresql://localhost:5432/extractstweet", "postgres",
+//						"s");
+//				stmt = connexion.createStatement();
+//				String sql = "SELECT center_longitude, center_latitude, radius, unit FROM \"Bounding_box\" WHERE title = 'mali'";
+//				ResultSet rs = stmt.executeQuery(sql);
+//				//Extract data from result set
+//				while(rs.next()){
+//					//Retrieve by column name
+//					double lg1 = rs.getDouble("center_longitude");
+//					double lg2 = rs.getDouble("center_latitude");
+//					double lt1 = rs.getDouble("radius");
+//					String lt2 = rs.getString("unit");
+//
+//					//Display values
+//					System.out.print("longitude1: " + lg1);
+//					System.out.print(", longitude2: " + lg2);
+//					System.out.print(", latitude1: " + lt1);
+//					System.out.println(", latitude2: " + lt2);
+//				}
+//
+//
+//				sql ="SELECT * FROM \"Info_user_app\" WHERE account_name = '"+compte+"'";
+//				rs = stmt.executeQuery(sql);
+//
+//				while(rs.next()){
+//					//Retrieve by column name
+//					String lg1 = rs.getString("consumer_key");
+//
+//
+//					//Display values
+//					System.out.println("consumer_key: " + lg1);
+//				}
+//				rs.close();
+//				System.out.println("Connexion effective !");
+//			}catch(SQLException se){
+//				//Handle errors for JDBC
+//				se.printStackTrace();
+//			}catch(Exception e){
+//				//Handle errors for Class.forName
+//				e.printStackTrace();
+//			}finally{
+//				//finally block used to close resources
+//				try{
+//					if(stmt!=null)
+//						connexion.close();
+//				}catch(SQLException se){
+//				}// do nothing
+//				try{
+//					if(connexion!=null)
+//						connexion.close();
+//				}catch(SQLException se){
+//					se.printStackTrace();
+//				}//end finally try
+//			}//end try
+//		}
+				Rest_search r = new Rest_search();
+				User_info ui = new User_info(CONSUMER_KEY, CONSUMER_SECRET,ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
+				r.setUi(ui);
+				r.add_user("bastokova");
+				r.setHour_min(13);
+				r.setHour_max(17);
+				
+				//r.add_kw("Prod");
+				//r.setDate("2015-03-17");
+				//r.add_ht("#EBOLA");
+				r.search_and_insert();
+
+		//System.out.println(API.equals("rest"));
+
+
+		
+	}
+
+}

@@ -6,19 +6,43 @@ public abstract class Search {
 	protected ArrayList<String> keywords;
 	protected ArrayList<String> hashtags;
 	protected String language;
+	protected ArrayList<String> users;
+	protected ArrayList<String> in_reply_to;
+	protected String date;
+	protected int hour_min;
+	protected int hour_max;
 	
 	public Search(){
 		keywords = new ArrayList<String>();
 		hashtags = new ArrayList<String>();
+		users = new ArrayList<String>();
+		in_reply_to = new ArrayList<String>();
 		language = "";
+		date = "";
+		hour_min = 0;
+		hour_max = 0;
+	}
 
+
+
+
+	public Search(ArrayList<String> keywords, ArrayList<String> hashtags,
+			String language, ArrayList<String> users,
+			ArrayList<String> in_reply_to, String date, int hour_min,
+			int hour_max) {
+		super();
+		this.keywords = keywords;
+		this.hashtags = hashtags;
+		this.language = language;
+		this.users = users;
+		this.in_reply_to = in_reply_to;
+		this.date = date;
+		this.hour_min = hour_min;
+		this.hour_max = hour_max;
 	}
-	public Search(ArrayList<String> k,ArrayList<String> h,String l){
-		keywords = k;
-		hashtags = h;
-		language = l;
-		
-	}
+
+
+
 
 	public ArrayList<String> getKeywords() {
 		return keywords;
@@ -44,6 +68,93 @@ public abstract class Search {
 		this.language = language;
 	}
 
+	public ArrayList<String> getusers() {
+		return users;
+	}
+
+
+	public void setusers(ArrayList<String> users) {
+		this.users = users;
+	}
+
+
+	public ArrayList<String> getin_reply_to() {
+		return in_reply_to;
+	}
+
+
+	public void setin_reply_to(ArrayList<String> in_reply_to) {
+		this.in_reply_to = in_reply_to;
+	}
+
+	
+
+	public ArrayList<String> getUsers() {
+		return users;
+	}
+
+
+	public void setUsers(ArrayList<String> users) {
+		this.users = users;
+	}
+
+
+	public ArrayList<String> getIn_reply_to() {
+		return in_reply_to;
+	}
+
+
+	public void setIn_reply_to(ArrayList<String> in_reply_to) {
+		this.in_reply_to = in_reply_to;
+	}
+
+
+	public String getDate() {
+		return date;
+	}
+
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+
+	public int getHour_min() {
+		return hour_min;
+	}
+
+
+
+
+	public void setHour_min(int hour_min) {
+		this.hour_min = hour_min;
+	}
+
+
+
+
+	public int getHour_max() {
+		return hour_max;
+	}
+
+
+
+
+	public void setHour_max(int hour_max) {
+		this.hour_max = hour_max;
+	}
+
+
+
+
+	public void add_user(String e)
+	{
+		users.add(e);
+	}
+	public void add_in_reply(String e)
+	{
+		in_reply_to.add(e);
+	}
 	public void add_kw(String kw){
 		keywords.add(kw);
 	}

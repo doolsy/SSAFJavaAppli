@@ -10,7 +10,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
- 
+
+
+
 
 
 import twitter4j.*;
@@ -22,25 +24,84 @@ public class Rest_search extends Search {
 	private ArrayList<Bounding_box_rest> bb;
 	private User_info ui;
 
+	private String date;
+	private int hour_min;
+	private int hour_max;
+	private int nb_tweet;
 
 	public Rest_search() {
 		super();
 		bb = new ArrayList<Bounding_box_rest>();
 		ui = new User_info();
+		date = "";
+		hour_min = 0;
+		hour_max = 0;
+		nb_tweet = 0;
 	}
 
 
 
 
+	public int getNb_tweet() {
+		return nb_tweet;
+	}
+
+
+
+
+	public void setNb_tweet(int nb_tweet) {
+		this.nb_tweet = nb_tweet;
+	}
+
+
+
+
+	public String getDate() {
+		return date;
+	}
+
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+
+	public int getHour_min() {
+		return hour_min;
+	}
+
+
+
+
+	public void setHour_min(int hour_min) {
+		this.hour_min = hour_min;
+	}
+
+
+
+
+	public int getHour_max() {
+		return hour_max;
+	}
+
+
+
+
+	public void setHour_max(int hour_max) {
+		this.hour_max = hour_max;
+	}
 
 
 
 	public Rest_search(ArrayList<String> keywords, ArrayList<String> hashtags,
 			String language, ArrayList<String> users,
-			ArrayList<String> in_reply_to,String date,int h_min,int h_max) {
-		super(keywords, hashtags, language, users, in_reply_to,date,h_min,h_max);
+			ArrayList<String> in_reply_to,String date,int h_min,int h_max,int nb_rt_min,int nb_rt_max) {
+		super(keywords, hashtags, language, users, in_reply_to,nb_rt_min,nb_rt_max);
 		bb = new ArrayList<Bounding_box_rest>();
 		ui = new User_info();
+		this.date = date;
+		this.hour_min = h_min;
+		this.hour_max = h_max;
 	}
 
 
@@ -119,6 +180,8 @@ public class Rest_search extends Search {
 	public void search_and_insert() throws TwitterException, Exception{
 		String kw_ht = "";
 
+		if(nb_tweet == 0)
+			nb_tweet = 500;
 		AccessToken aToken;
 
 		// Creation d'un objet Twitter
@@ -155,12 +218,16 @@ public class Rest_search extends Search {
 										{
 											if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
 
-												System.out.println(status.getUser().getName() + ":" +
-														status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
+												if(language.equals("") || status.getLang().equals(language))
+													if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+														System.out.println(status.getUser().getName() + ":" +
+																status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
 										}
 										else //pas de filtre par heure
-											System.out.println(status.getUser().getName() + ":" +
-													status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
+											if(language.equals("") || status.getLang().equals(language))
+												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+													System.out.println(status.getUser().getName() + ":" +
+															status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
 
 								}
 								else
@@ -168,13 +235,16 @@ public class Rest_search extends Search {
 									if(hour_min != 0 && hour_max != 0)
 									{
 										if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
-
-											System.out.println(status.getUser().getName() + ":" +
-													status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
+											if(language.equals("") || status.getLang().equals(language))
+												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+													System.out.println(status.getUser().getName() + ":" +
+															status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
 									}
 									else //pas de filtre par heure
-										System.out.println(status.getUser().getName() + ":" +
-												status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
+										if(language.equals("") || status.getLang().equals(language))
+											if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+												System.out.println(status.getUser().getName() + ":" +
+														status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
 
 								}
 							}
@@ -189,13 +259,16 @@ public class Rest_search extends Search {
 										if(hour_min != 0 && hour_max != 0)
 										{
 											if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
-
-												System.out.println(status.getUser().getName() + ":" +
-														status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
+												if(language.equals("") || status.getLang().equals(language))
+													if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+														System.out.println(status.getUser().getName() + ":" +
+																status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
 										}
 										else //pas de filtre par heure
-											System.out.println(status.getUser().getName() + ":" +
-													status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
+											if(language.equals("") || status.getLang().equals(language))
+												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+													System.out.println(status.getUser().getName() + ":" +
+															status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
 
 								}
 								else
@@ -203,13 +276,16 @@ public class Rest_search extends Search {
 									if(hour_min != 0 && hour_max != 0)
 									{
 										if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
-
-											System.out.println(status.getUser().getName() + ":" +
-													status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
+											if(language.equals("") || status.getLang().equals(language))
+												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+													System.out.println(status.getUser().getName() + ":" +
+															status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
 									}
 									else //pas de filtre par heure
-										System.out.println(status.getUser().getName() + ":" +
-												status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
+										if(language.equals("") || status.getLang().equals(language))
+											if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+												System.out.println(status.getUser().getName() + ":" +
+														status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()) );//inserer dans la bdd
 
 								}
 							}
@@ -224,13 +300,16 @@ public class Rest_search extends Search {
 										if(hour_min != 0 && hour_max != 0)
 										{
 											if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
-
-												System.out.println(status.getUser().getName() + ":" +
-														status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
+												if(language.equals("") || status.getLang().equals(language))
+													if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+														System.out.println(status.getUser().getName() + ":" +
+																status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
 										}
 										else //pas de filtre par heure
-											System.out.println(status.getUser().getName() + ":" +
-													status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
+											if(language.equals("") || status.getLang().equals(language))
+												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+													System.out.println(status.getUser().getName() + ":" +
+															status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
 
 								}
 								else
@@ -239,12 +318,16 @@ public class Rest_search extends Search {
 									{
 										if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
 
-											System.out.println(status.getUser().getName() + ":" +
-													status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
+											if(language.equals("") || status.getLang().equals(language))
+												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+													System.out.println(status.getUser().getName() + ":" +
+															status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
 									}
 									else //pas de filtre par heure
-										System.out.println(status.getUser().getName() + ":" +
-												status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
+										if(language.equals("") || status.getLang().equals(language))
+											if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+												System.out.println(status.getUser().getName() + ":" +
+														status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
 
 								}
 							}
@@ -257,6 +340,8 @@ public class Rest_search extends Search {
 
 				kw_ht = build_kw_and_ht();
 				Query query = new Query(kw_ht);
+				if(language != "")
+					query.setLang(language);
 				if(date != "")
 					query.setSince(date);
 				if(language != "")
@@ -271,20 +356,23 @@ public class Rest_search extends Search {
 						if(hour_min != 0 && hour_max != 0)
 						{
 							if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
+								if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
 
-								System.out.println(status.getUser().getName() + ":" +
-										status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
+									System.out.println(status.getUser().getName() + ":" +
+											status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
 						}
 						else //pas de filtre par heure
-							System.out.println(status.getUser().getName() + ":" +
-									status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
+							if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
+								System.out.println(status.getUser().getName() + ":" +
+										status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt())+ " "+
+										status.getLang());//inserer dans la bdd
 
 					}
-					System.out.println(i);
+					//System.out.println(i);
 					query=result.nextQuery();
 					if(query!=null)
 						result=t.search(query);
-				}while(query!=null && i<=10);
+				}while(query!=null && i<=(nb_tweet/100));
 			}
 		}
 		else

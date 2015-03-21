@@ -8,9 +8,9 @@ public abstract class Search {
 	protected String language;
 	protected ArrayList<String> users;
 	protected ArrayList<String> in_reply_to;
-	protected String date;
-	protected int hour_min;
-	protected int hour_max;
+	protected int nb_rt_min;
+	protected int nb_rt_max;
+	
 	
 	public Search(){
 		keywords = new ArrayList<String>();
@@ -18,28 +18,27 @@ public abstract class Search {
 		users = new ArrayList<String>();
 		in_reply_to = new ArrayList<String>();
 		language = "";
-		date = "";
-		hour_min = 0;
-		hour_max = 0;
+		nb_rt_min = nb_rt_max =0;
+ 
 	}
-
-
-
 
 	public Search(ArrayList<String> keywords, ArrayList<String> hashtags,
 			String language, ArrayList<String> users,
-			ArrayList<String> in_reply_to, String date, int hour_min,
-			int hour_max) {
+			ArrayList<String> in_reply_to, int nb_rt_min, int nb_rt_max) {
 		super();
 		this.keywords = keywords;
 		this.hashtags = hashtags;
 		this.language = language;
 		this.users = users;
 		this.in_reply_to = in_reply_to;
-		this.date = date;
-		this.hour_min = hour_min;
-		this.hour_max = hour_max;
+		this.nb_rt_min = nb_rt_min;
+		this.nb_rt_max = nb_rt_max;
 	}
+
+
+
+
+
 
 
 
@@ -108,44 +107,21 @@ public abstract class Search {
 		this.in_reply_to = in_reply_to;
 	}
 
-
-	public String getDate() {
-		return date;
+	public int getNb_rt_min() {
+		return nb_rt_min;
 	}
 
-
-	public void setDate(String date) {
-		this.date = date;
+	public void setNb_rt_min(int nb_rt_min) {
+		this.nb_rt_min = nb_rt_min;
 	}
 
-
-	public int getHour_min() {
-		return hour_min;
+	public int getNb_rt_max() {
+		return nb_rt_max;
 	}
 
-
-
-
-	public void setHour_min(int hour_min) {
-		this.hour_min = hour_min;
+	public void setNb_rt_max(int nb_rt_max) {
+		this.nb_rt_max = nb_rt_max;
 	}
-
-
-
-
-	public int getHour_max() {
-		return hour_max;
-	}
-
-
-
-
-	public void setHour_max(int hour_max) {
-		this.hour_max = hour_max;
-	}
-
-
-
 
 	public void add_user(String e)
 	{

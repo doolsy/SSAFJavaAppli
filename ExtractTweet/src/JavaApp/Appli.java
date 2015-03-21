@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,15 +33,18 @@ public class Appli {
 
 		ArrayList <String> kw = new ArrayList<String>(),ht = new ArrayList<String>()
 				,usr = new ArrayList<String>(),reply_to =new ArrayList<String>(),bounding_box =new ArrayList<String>();
-		int hr[] = new int[2];
-		int nb_rt[] = new int[2];
+		int hr[] = {0,0};
+		//hr ={0,0};
+		int nb_rt[] = {0,0};
 
 
 		/*****PARSER DU FICHIER DE RECHERCHE****/
 		JSONParser parser = new JSONParser();
 
-		String ap="", account="",lang="",dat="";
+		String ap="", account="",lang="",dat="",search_title="",search_timestamp="";
+		Date search_time;
 		JSONArray keywords,retweets, hour,answer_to,users,bb;
+		int number_of_tweet = 0;
 
 		try {
 
@@ -59,7 +63,18 @@ public class Appli {
 			answer_to = (JSONArray) jsonObject.get("answer_to");
 			users = (JSONArray) jsonObject.get("users");
 			bb = (JSONArray) jsonObject.get("bounding_box");
+			
+			search_title = (String) jsonObject.get("search_title"); // à  traiter
+			
+			search_timestamp = (String) jsonObject.get("search_timestamp");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+			search_time = sdf.parse(search_timestamp);
+			sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
+			search_time = sdf.parse(sdf.format(search_time));//à traiter
+			
+			number_of_tweet = Integer.parseInt((String) jsonObject.get("result_limit")); //à traiter
 
+			//System.out.println(search_time);
 			if(keywords != null)
 			{
 				Iterator<String> it = keywords.iterator();
@@ -191,13 +206,13 @@ public class Appli {
 //			for(int i=0;i<kw.size();i++)
 //				r.add_kw(kw.get(i));
 //			for(int i=0;i<ht.size();i++)
-//				r.add_kw(ht.get(i));
+//				r.add_ht(ht.get(i));
 //			r.setLanguage(language);
 //			r.setDate(date);
 //			r.setHour_min(hr[0]);
 //			r.setHour_max(hr[1]);
 			//r.add_kw("good -morning");
-			r.search_and_insert();
+			//r.search_and_insert();
 			return;
 		}
 

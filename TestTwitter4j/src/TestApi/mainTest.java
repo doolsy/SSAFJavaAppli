@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.lang.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -73,6 +74,8 @@ public class mainTest {
 		
 		//============================RECUPERATION DES CRITERES=========================//
 		
+		Criteres critere = new Criteres();		
+		critere.parsing();
 		
 //		twitterStream.sample();
 		/*=====mots-clés
@@ -81,8 +84,7 @@ public class mainTest {
 		expression entre guillement --> il cherche avec les "" aussi...
 		le "-" pour la negation ne marche pas*/
 		
-		Criteres critere = new Criteres();		
-		critere.parsing();
+		
 		System.out.println(critere.kw);
 		
 	    String motscles[] = new String [critere.kw.size()];
@@ -93,20 +95,29 @@ public class mainTest {
 		//new String[] { "\"good morning\"" }
 		twitterStream.filter(fq);
 		
-		/*===========Hashtag
-		 * idem mots clé
-		 */
+		//===========Hashtag====================================
+		String hashtag[] = new String [critere.ht.size()];
+		hashtag = critere.ht.toArray(motscles);
+		 twitterStream.filter(fq.track(hashtag));
+		 
 
+		//===============langue==================================
+		java.lang.String langue[] = new java.lang.String[1];
+		langue[0] = critere.lang;
+		fq.language(langue);
+		
+		//=================geolocalisation =======================
+		String bbox[] = new String [critere.bounding_box.size()];
 		
 		
-//		FilterQuery fq = new FilterQuery();
-		
-		
-		// filter by geolocation
-//	    double[][] locations = { { -122.75d ,36.8d }, { -121.75d, 37.8d } }; // San Francisco
-//	    fq.locations(locations);
+	   // double[][] locations = { { -122.75d ,36.8d }, { -121.75d, 37.8d } }; // San Francisco
+	    //fq.locations(locations);
 	    
-//	    twitterStream.filter(fq);
+	    twitterStream.filter(fq);
+	    
+	    //===================nb de tweet à retouner=================
+	    int nbTweets = critere.number_of_tweet;
+	    fq.count(nbTweets);
 		
 			}	
 

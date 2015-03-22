@@ -19,6 +19,9 @@ public class Criteres {
 	ArrayList <String> usr = new ArrayList<String>();//liste d'utilisateurs
 	ArrayList <String> reply_to = new ArrayList<String>(); //liste de réponses
 	ArrayList <String> bounding_box =new ArrayList<String>();//liste de bounding box
+	String lang="";
+	int number_of_tweet = 5;
+	
 	int hr[] = {0,0}; //tableau de plages horaires
 	//hr ={0,0};
 	int nb_rt[] = {0,0}; //tableau de retweets
@@ -29,10 +32,15 @@ public class Criteres {
 	
 	JSONParser parser = new JSONParser();
 
-	String ap="", account="",lang="",dat="",search_title="",search_timestamp="";
+	String ap="";
+	String account="";
+	//String lang="";
+	String dat="";
+	String search_title="";
+	String search_timestamp="";
 	Date search_time;
 	JSONArray keywords,retweets, hour,answer_to,users,bb;
-	int number_of_tweet = 0;
+	
 
 	try {
 

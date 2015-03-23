@@ -26,7 +26,6 @@ public abstract class Search {
 		in_reply_to = new ArrayList<String>();
 		language = "";
 		nb_rt_min = nb_rt_max =0;
-		ui = new User_info();
  
 	}
 

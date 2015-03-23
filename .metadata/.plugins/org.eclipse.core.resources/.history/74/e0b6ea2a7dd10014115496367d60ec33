@@ -12,9 +12,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+
+
+
+
+
+
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
 import twitter4j.*;
 import twitter4j.auth.AccessToken;
 
@@ -88,6 +97,21 @@ public class Rest_search extends Search {
 	public void setHour_max(int hour_max) {
 		this.hour_max = hour_max;
 	}
+
+
+
+	public Rest_search(ArrayList<String> keywords, ArrayList<String> hashtags,
+			String language, ArrayList<String> users,
+			ArrayList<String> in_reply_to,String date,int h_min,int h_max,int nb_rt_min,int nb_rt_max) {
+		super(keywords, hashtags, language, users, in_reply_to,nb_rt_min,nb_rt_max);
+		bb = new ArrayList<Bounding_box_rest>();
+		ui = new User_info();
+		this.date = date;
+		this.hour_min = h_min;
+		this.hour_max = h_max;
+	}
+
+
 
 	public ArrayList<Bounding_box_rest> getBb() {
 		return bb;

@@ -55,9 +55,6 @@ public class Insert_class {
 		this.status_list = status_list;
 	}
 	
-	public void add(Status s){
-		this.status_list.add(s);
-	}
 	
 	
 }

@@ -26,9 +26,22 @@ public abstract class Search {
 		in_reply_to = new ArrayList<String>();
 		language = "";
 		nb_rt_min = nb_rt_max =0;
-		ui = new User_info();
  
 	}
+
+	public Search(ArrayList<String> keywords, ArrayList<String> hashtags,
+			String language, ArrayList<String> users,
+			ArrayList<String> in_reply_to, int nb_rt_min, int nb_rt_max) {
+		super();
+		this.keywords = keywords;
+		this.hashtags = hashtags;
+		this.language = language;
+		this.users = users;
+		this.in_reply_to = in_reply_to;
+		this.nb_rt_min = nb_rt_min;
+		this.nb_rt_max = nb_rt_max;
+	}
+
 
 	public User_info getUi() {
 		return ui;

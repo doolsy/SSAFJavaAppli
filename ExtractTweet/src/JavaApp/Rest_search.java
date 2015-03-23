@@ -26,7 +26,6 @@ public class Rest_search extends Search {
 	private String date;
 	private int hour_min;
 	private int hour_max;
-	private int nb_tweet;
 
 	public Rest_search() {
 		super();
@@ -36,21 +35,6 @@ public class Rest_search extends Search {
 		hour_max = 0;
 		nb_tweet = 0;
 	}
-
-
-
-
-	public int getNb_tweet() {
-		return nb_tweet;
-	}
-
-
-
-
-	public void setNb_tweet(int nb_tweet) {
-		this.nb_tweet = nb_tweet;
-	}
-
 
 
 

@@ -1,0 +1,216 @@
+package JavaApp;
+
+import java.io.FileReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+public class Streaming_search extends Search{
+
+	private Bounding_box_stream bb;
+	private int nb_tweet;
+	
+	
+	public Streaming_search() {
+		super();
+	}
+
+	public Bounding_box_stream getBb() {
+		return bb;
+	}
+
+	public void setBb(Bounding_box_stream bb) {
+		this.bb = bb;
+	}
+	
+	public int getNb_tweet() {
+		return nb_tweet;
+	}
+
+	public void setNb_tweet(int nb_tweet) {
+		this.nb_tweet = nb_tweet;
+	}
+
+	public void parse()
+	{
+		String API="", account_name="",language="",date="";
+
+		ArrayList<String> bounding_box =new ArrayList<String>();
+		int hr[] = {0,0};
+		//hr ={0,0};
+		int nb_rt[] = {0,0};
+
+
+		/*****PARSER DU FICHIER DE RECHERCHE****/
+		JSONParser parser = new JSONParser();
+
+		String ap="", account="",lang="",dat="",search_title="",search_timestamp="",number_of_tweet="";
+		Date search_time;
+		JSONArray keywords,retweets, hour,answer_to,users,bb;
+
+		try {
+
+			Object obj = parser.parse(new FileReader(
+					"C:/xampp/htdocs/SSAFProject/Controlers/recherche.json"));
+
+			JSONObject jsonObject = (JSONObject) obj;
+
+			ap = (String) jsonObject.get("API");
+			account = (String) jsonObject.get("compte_API");
+			keywords = (JSONArray) jsonObject.get("keywords");
+			language = (String) jsonObject.get("language");
+			retweets = (JSONArray) jsonObject.get("retweets_from_to");
+			answer_to = (JSONArray) jsonObject.get("answer_to");
+			users = (JSONArray) jsonObject.get("users");
+			bb = (JSONArray) jsonObject.get("bounding_box");
+
+			search_title = (String) jsonObject.get("search_title"); // à  traiter
+
+			search_timestamp = (String) jsonObject.get("search_timestamp");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+			search_time = sdf.parse(search_timestamp);
+			sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
+			search_time = sdf.parse(sdf.format(search_time));
+
+			number_of_tweet = (String) jsonObject.get("result_limit"); //à traiter
+
+			//System.out.println(search_time);
+			if(keywords != null)
+			{
+				Iterator<String> it = keywords.iterator();
+				while (it.hasNext()) {
+					//System.out.println((String)it.next());
+					String wd = it.next();
+					if(wd.indexOf("#") == 0)
+						this.add_ht(wd);
+					else 
+						this.add_kw(wd);
+					//System.out.print(it1.next() + " ");
+				}
+			}
+
+			if(users != null)
+			{
+				Iterator<String> it = users.iterator();
+				while (it.hasNext()) {
+					this.add_user(it.next());
+				}
+			}
+			if(answer_to != null)
+			{
+				Iterator<String> it = answer_to.iterator();
+				while (it.hasNext()) {
+					this.add_in_reply(it.next());
+				}
+			}
+			if(bb != null)
+			{
+				Iterator<String> it = bounding_box.iterator();
+				while (it.hasNext()) {
+					bounding_box.add(it.next());//a changer
+				}
+			}
+			if(retweets != null)
+			{
+				Iterator<Long> it = retweets.iterator();
+				int i=0;
+				while (it.hasNext()) {
+					nb_rt[i]= it.next().intValue();
+					i++;
+				}
+				this.setNb_rt_min(nb_rt[0]);
+				this.setNb_rt_max(nb_rt[1]);
+			}
+
+			if (language != null)
+				this.setLanguage(language);
+			if(number_of_tweet != null)
+				this.setNb_tweet(Integer.parseInt(number_of_tweet));
+			API = ap;
+			account_name = account;
+			this.setSearch_time(search_time);
+
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		/*********************************END PARSER**************************/
+
+		/*********************************CONNEXION A LA BDD & RECHERCHES******************************/
+		Connection connexion = null;
+		Statement stmt = null;
+
+		//Rest_search r = new Rest_search();
+		try {
+
+			connexion = DriverManager.getConnection(
+					"jdbc:postgresql://localhost:5432/extractstweet", "postgres",
+					"s");
+			stmt = connexion.createStatement();
+
+			String sql ="SELECT * FROM \"Info_user_app\" WHERE account_name = '"+account_name+"'";
+			ResultSet rs = stmt.executeQuery(sql);
+
+			while(rs.next()){
+				//Retrieve by column name
+				int id = rs.getInt("id_iua");
+				String ck = rs.getString("consumer_key");
+				String cks = rs.getString("consumer_secret");
+				String at = rs.getString("access_token");
+				String ats = rs.getString("access_token_secret");
+
+
+				User_info ui = new User_info(id,ck,cks,at,ats);
+				this.setUi(ui);
+			}
+			for(int i=0;i<bounding_box.size();i++)
+			{
+				//recuperation des valeurs de chaque bounding box à travers leur nom
+				sql = "SELECT * FROM \"Bounding_box\" WHERE title = '"+bounding_box.get(i)+"'";
+				rs = stmt.executeQuery(sql);
+
+				while(rs.next()){
+					double clong = rs.getDouble("center_longitude");
+					double clat = rs.getDouble("center_latitude");
+					double radius = rs.getDouble("radius");
+					Bounding_box_rest bbr = new Bounding_box_rest(clong,clat,(radius)/1000,"km");
+
+					this.add_bounding_box(bbr);
+				}
+			}
+			rs.close();
+			System.out.println("Connexion effective !");
+		}catch(SQLException se){
+			//Handle errors for JDBC
+			se.printStackTrace();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			e.printStackTrace();
+		}finally{
+			//finally block used to close resources
+			try{
+				if(stmt!=null)
+					connexion.close();
+			}catch(SQLException se){
+			}// do nothing
+			try{
+				if(connexion!=null)
+					connexion.close();
+			}catch(SQLException se){
+				se.printStackTrace();
+			}//end finally try
+		}//end try
+	}
+
+}

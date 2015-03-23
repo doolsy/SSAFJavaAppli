@@ -15,6 +15,7 @@ public abstract class Search {
 	protected int nb_rt_min;
 	protected int nb_rt_max;
 	protected User_info ui;
+	protected int nb_tweet;
 	
 	
 	public Search(){
@@ -27,6 +28,7 @@ public abstract class Search {
 		language = "";
 		nb_rt_min = nb_rt_max =0;
 		ui = new User_info();
+		nb_tweet = 0;
  
 	}
 
@@ -39,6 +41,15 @@ public abstract class Search {
 	public void setUi(User_info ui) {
 		this.ui = ui;
 	}
+	
+	public int getNb_tweet() {
+		return nb_tweet;
+	}
+	
+	public void setNb_tweet(int nb_tweet) {
+		this.nb_tweet = nb_tweet;
+	}
+
 	public String getSearch_title() {
 		return search_title;
 	}

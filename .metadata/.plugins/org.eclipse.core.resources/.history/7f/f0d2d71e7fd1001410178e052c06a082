@@ -1,0 +1,22 @@
+package JavaApp;
+
+public class Streaming_search extends Search{
+
+	private Bounding_box_stream bb;
+
+	
+	
+	public Streaming_search() {
+		super();
+	}
+
+	public Bounding_box_stream getBb() {
+		return bb;
+	}
+
+	public void setBb(Bounding_box_stream bb) {
+		this.bb = bb;
+	}
+	
+	
+}

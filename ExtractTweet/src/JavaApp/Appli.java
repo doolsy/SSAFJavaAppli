@@ -67,7 +67,9 @@ public class Appli {
 		}
 		else
 		{
-			
+			Streaming_search r= new Streaming_search();
+			r.parse();
+			r.search_and_insert();
 		}
 
 

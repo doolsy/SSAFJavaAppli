@@ -22,7 +22,7 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
-import com.google.gson.Gson;
+//import com.google.gson.Gson;
 
 public class mainTest {
 
@@ -57,13 +57,11 @@ public class mainTest {
 				ex.printStackTrace();
 			}
 			
-			@Override
+
 			public void onScrubGeo(long arg0, long arg1) {
 				// TODO Auto-generated method stub
 			}
-			@Override
 			public void onStallWarning(StallWarning arg0) {
-				// TODO Auto-generated method stub
 			}
 		};
 		
@@ -83,15 +81,16 @@ public class mainTest {
 		
 		Criteres critere = new Criteres();		
 		critere.parsing();
-		System.out.println(critere.kw);
 		
-	    String motscles[] = new String [critere.kw.size()];
-	    motscles = critere.kw.toArray(motscles);
+		
+	    String motscles[] = new String [critere.ht.size()];
+	    motscles = critere.ht.toArray(motscles);
 		
 		FilterQuery fq = new FilterQuery();
-		fq.track(motscles);
+		
 		//new String[] { "\"good morning\"" }
-		twitterStream.filter(fq);
+		twitterStream.filter(fq.track(motscles));
+		System.out.println(motscles[0].toString());
 		
 		/*===========Hashtag
 		 * idem mots clé

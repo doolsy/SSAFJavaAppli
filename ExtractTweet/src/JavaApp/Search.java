@@ -1,8 +1,12 @@
 package JavaApp;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public abstract class Search {
+	
+	protected String search_title;
+	protected Date search_time;
 	protected ArrayList<String> keywords;
 	protected ArrayList<String> hashtags;
 	protected String language;
@@ -13,6 +17,8 @@ public abstract class Search {
 	
 	
 	public Search(){
+		search_title ="";
+		search_time = new Date();
 		keywords = new ArrayList<String>();
 		hashtags = new ArrayList<String>();
 		users = new ArrayList<String>();
@@ -36,12 +42,22 @@ public abstract class Search {
 	}
 
 
+	public String getSearch_title() {
+		return search_title;
+	}
 
+	public void setSearch_title(String search_title) {
+		this.search_title = search_title;
+	}
 
+	
+	public Date getSearch_time() {
+		return search_time;
+	}
 
-
-
-
+	public void setSearch_time(Date search_time) {
+		this.search_time = search_time;
+	}
 
 	public ArrayList<String> getKeywords() {
 		return keywords;

@@ -1,0 +1,119 @@
+package TestApi;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue; 
+import org.json.simple.parser.JSONParser;
+
+import twitter4j.FilterQuery;
+import twitter4j.StallWarning;
+import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
+import twitter4j.StatusListener;
+import twitter4j.TwitterException;
+import twitter4j.TwitterObjectFactory;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.conf.ConfigurationBuilder;
+
+//import com.google.gson.Gson;
+
+public class mainTest {
+
+	public static void main(String[] args) throws Exception,TwitterException, IOException {
+		
+		//=========================ACCES A L'API TWITTER=================================//
+		//codes d'accès : 
+		 	ConfigurationBuilder cb = new ConfigurationBuilder();
+	        cb.setDebugEnabled(true);
+	        cb.setOAuthConsumerKey("eRGzpaBXXhnjvEb5kPzrwZK6E");
+	        cb.setOAuthConsumerSecret("QtAkRRwYAAjM9cNPfyGjai9TfgjZjcMUQcdPTGUVH29LZQwpP3");
+	        cb.setOAuthAccessToken("2994875859-7KHIot0XzW20h6dl2hbDcvvzwxGJoewL8nkxjdN");
+	        cb.setOAuthAccessTokenSecret("v8wOJNGoQR6fiJGSaocgu74WTZD3B93Z6QBMRFEIy7DMV");
+
+	        TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
+	     //===================================================================================//   
+	        
+	     //===========================RECUPERATION DES TWEETS=================================//  
+		
+		StatusListener listener = new StatusListener(){
+			
+			public void onStatus(Status status) {
+				System.out.println(status.getUser().getName() + " : " + status.getText());
+				//System.out.println("RAW JSON: " + TwitterObjectFactory.getRawJSON(status));
+			}
+			
+			public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
+			
+			public void onTrackLimitationNotice(int numberOfLimitedStatuses) {}
+			
+			public void onException(Exception ex) {
+				ex.printStackTrace();
+			}
+			
+
+			public void onScrubGeo(long arg0, long arg1) {
+				// TODO Auto-generated method stub
+			}
+			public void onStallWarning(StallWarning arg0) {
+			}
+		};
+		
+		twitterStream.addListener(listener);
+		
+		//==============================================================================//
+		
+		//============================RECUPERATION DES CRITERES=========================//
+		
+		
+//		twitterStream.sample();
+		/*=====mots-clés
+		separer d'une virgule --> OU
+		separe du'n espace --> ET , ils seront tous dans la phrase mais pas forcément collé
+		expression entre guillement --> il cherche avec les "" aussi...
+		le "-" pour la negation ne marche pas*/
+		
+		Criteres critere = new Criteres();		
+		critere.parsing();
+		
+		
+	    String motscles[] = {"omg"};//new String [critere.ht.size()];
+	    //motscles = critere.ht.toArray(motscles);
+		
+		//FilterQuery fq = new FilterQuery();
+		//fq.track(motscles);
+		//new String[] { "\"good morning\"" }
+		//twitterStream.filter(fq);
+		System.out.println(motscles[0].toString());
+		
+		/*===========Hashtag
+		 * idem mots clé
+		 */
+
+		
+		
+//		FilterQuery fq = new FilterQuery();
+		
+		
+		// filter by geolocation
+//	    double[][] locations = { { -122.75d ,36.8d }, { -121.75d, 37.8d } }; // San Francisco
+//	    fq.locations(locations);
+	    
+//	    twitterStream.filter(fq);
+		
+			}	
+
+		
+		
+		
+		}
+		
+	
+
+

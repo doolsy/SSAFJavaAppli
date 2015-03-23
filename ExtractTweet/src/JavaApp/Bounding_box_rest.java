@@ -8,6 +8,7 @@ public class Bounding_box_rest {
 	private String unit;
 	public Bounding_box_rest() {
 
+		unit = "km";
 	}
 	public Bounding_box_rest(double center_longitude, double center_latitude,
 			double radius, String unit) {

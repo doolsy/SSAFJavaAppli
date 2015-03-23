@@ -65,10 +65,6 @@ public class Appli {
 			//System.out.println((38284.3456)/1000);
 			return;
 		}
-		else
-		{
-			
-		}
 
 
 

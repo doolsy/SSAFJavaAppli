@@ -25,6 +25,8 @@ import twitter4j.auth.AccessToken;
 @SuppressWarnings("unused")
 public class Appli {
 
+	
+	@SuppressWarnings("unchecked")
 	public static void main(String[] argv) throws Exception {
 
 		String API="";

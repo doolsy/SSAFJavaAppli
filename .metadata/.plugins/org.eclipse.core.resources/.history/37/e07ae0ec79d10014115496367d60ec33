@@ -1,0 +1,7 @@
+package JavaApp;
+
+public class Insert_class {
+
+	private Search s;
+	
+}

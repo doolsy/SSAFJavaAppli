@@ -25,14 +25,24 @@ import twitter4j.auth.AccessToken;
 @SuppressWarnings("unused")
 public class Appli {
 
+	
+	@SuppressWarnings("unchecked")
 	public static void main(String[] argv) throws Exception {
 
-		String API="";
+		String API="", account_name="",language="",date="";
+
+		ArrayList <String> kw = new ArrayList<String>(),ht = new ArrayList<String>()
+				,usr = new ArrayList<String>(),reply_to =new ArrayList<String>(),bounding_box =new ArrayList<String>();
+		int hr[] = {0,0};
+		//hr ={0,0};
+		int nb_rt[] = {0,0};
+
 
 		/*****PARSER DU FICHIER DE RECHERCHE****/
 		JSONParser parser = new JSONParser();
 
-		String ap="";
+		String ap="", account="",lang="",dat="",search_title="",search_timestamp="";
+		Date search_time;
 		JSONArray keywords,retweets, hour,answer_to,users,bb;
 		int number_of_tweet = 0;
 

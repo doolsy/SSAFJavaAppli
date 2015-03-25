@@ -1,0 +1,224 @@
+package JavaApp;
+
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue; 
+
+import java.io.FileReader;
+import java.util.Iterator;
+
+import org.json.simple.parser.JSONParser;
+
+import twitter4j.*;
+import twitter4j.auth.AccessToken;
+
+
+public class Insert_class {
+
+	private Search search;
+	List <Status> status_list;
+
+
+	public Insert_class() {
+		super();
+	}
+
+	public Insert_class(Search search, List<Status> status_list) {
+		super();
+		this.search = search;
+		this.status_list = status_list;
+	}
+
+	public Search getSearch() {
+		return search;
+	}
+
+	public void setSearch(Search search) {
+		this.search = search;
+	}
+
+	public List<Status> getStatus_list() {
+		return status_list;
+	}
+
+	public void setStatus_list(List<Status> status_list) {
+		this.status_list = status_list;
+	}
+
+	public void insert_parameters() throws SQLException
+	{
+		//gerer toutes les insertions
+		Connection connexion = null;
+		Statement stmt = null, stmt1 = null;
+		PreparedStatement smt;
+		ResultSet rs,rs1;
+		//Rest_search r = new Rest_search();
+		try {
+
+			connexion = DriverManager.getConnection(
+					"jdbc:postgresql://localhost:5432/extractstweet", "postgres",
+					"s");
+			connexion.setAutoCommit(false);
+			stmt = connexion.createStatement();
+			String sql ="";
+			String sql2 ="";
+			//insertion des mots clés
+			for(int i=0;i<this.getSearch().getKeywords().size();i++)
+			{
+				//System.out.println(this.getSearch().getKeywords().get(i));
+				sql2 = "SELECT * from \"Keyword\" where words ='"+this.getSearch().getKeywords().get(i)+"'";
+				rs = stmt.executeQuery(sql2);
+				if(!rs.next())
+				{
+					if(this.getSearch().getLanguage() != "")
+						sql = "INSERT INTO \"Keyword\" (language,words) VALUES ('"+this.getSearch().getLanguage()+"',"
+								+"'"+this.getSearch().getKeywords().get(i)+"')";
+					else 
+						sql = "INSERT INTO \"Keyword\" (language,words) VALUES ('fr',"
+								+"'"+this.getSearch().getKeywords().get(i)+"')";
+					//System.out.println(sql);
+					stmt.executeUpdate(sql);
+
+				}
+			}
+			//insertion des hashtags
+			for(int i=0;i<this.getSearch().getHashtags().size();i++)
+			{
+				sql2 = "SELECT * from \"Hashtag\" where hashtags ='"+this.getSearch().getHashtags().get(i)+"'";
+				rs = stmt.executeQuery(sql2);
+				if(!rs.next())
+				{
+					//System.out.println(this.getSearch().getHashtags().get(i));
+					sql = "INSERT INTO \"Hashtag\" (hashtags) VALUES ("
+							+"'"+this.getSearch().getHashtags().get(i)+"')";
+					//System.out.println(sql);
+					stmt.executeUpdate(sql);
+				}
+
+			}
+			//insertion dans la table search parameters
+			sql2 = "SELECT * FROM \"Search_parameters\" WHERE search_title='"+this.getSearch().getSearch_title()+"'";
+			rs = stmt.executeQuery(sql2);
+			if(!rs.next())
+			{
+				//System.out.println(this.getSearch().getSearch_title().get(i));
+				Date parsed = null;
+				if(this.getSearch().getClass().getName().equals("JavaApp.Rest_search"))
+					//System.out.println(((Rest_search)this.getSearch()).getHour_max());
+				{
+
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+					parsed = null;
+					java.sql.Date s =null;
+					if((((Rest_search)this.getSearch()).getDate()) != "")
+					{
+						parsed = format.parse(((Rest_search)this.getSearch()).getDate());
+						s = new java.sql.Date(parsed.getTime());
+						System.out.println(s);
+					}
+					sql = "INSERT INTO \"Search_parameters\" (search_title,hour_min,hour_max,current,since) VALUES ('"
+							+this.getSearch().getSearch_title()+"',"
+							+ ((Rest_search)this.getSearch()).getHour_min()+ ","
+							+((Rest_search)this.getSearch()).getHour_max()+",true,?)";
+					smt = connexion.prepareStatement(sql);
+					smt.setDate(1,s);
+					smt.executeUpdate();
+
+
+				}
+				else
+				{
+					sql = "INSERT INTO \"Search_parameters\" (search_title,hour_min,hour_max,current,since) VALUES ('"
+							+this.getSearch().getSearch_title()+"',0,0,true,NULL)";
+					//stmt.executeUpdate(sql);
+					stmt.executeUpdate(sql);
+				}
+			}
+			//insertion dans search_date
+			sql2 = "SELECT * FROM \"Search_date\" WHERE search_date=?";
+			smt = connexion.prepareStatement(sql2);
+			smt.setDate(1,new java.sql.Date(this.getSearch().getSearch_time().getTime()));
+			rs = smt.executeQuery();
+			if(!rs.next())
+			{
+				sql = "INSERT INTO \"Search_date\" (search_date) VALUES(?)";
+				smt = connexion.prepareStatement(sql);
+				smt.setDate(1,new java.sql.Date(this.getSearch().getSearch_time().getTime()));
+				smt.executeUpdate();
+			}
+			
+			for(int i=0;i<this.getSearch().getKeywords().size();i++)
+			{
+				sql = "SELECT * FROM \"Keyword\" where words ='"+this.getSearch().getKeywords().get(i)+"'";
+				rs = stmt.executeQuery(sql);
+				sql2 = "SELECT * FROM \"Search_parameters\" WHERE search_title='"+this.getSearch().getSearch_title()+"'";
+				rs1 = stmt1.executeQuery(sql2);
+				while(rs.next())
+				{
+					int id_kw = rs.getInt("id_kw");
+					
+					while(rs1.next())
+					{
+						int id_s = rs1.getInt("id_search");
+						sql2 = "INSERT INTO \"Contain\" values("+id_s+","+id_kw+")";
+						stmt.executeUpdate(sql2);
+					}
+				}
+			}
+			//rs.close();
+			connexion.commit();
+		}catch(Exception e){
+			//Handle errors for Class.forName
+			connexion.rollback();
+			e.printStackTrace();
+		}		
+	}
+	public void add(Status s){
+		this.status_list.add(s);
+		if(this.status_list.size() > 100)
+		{
+			//gerer toutes les insertions
+			Connection connexion = null;
+			Statement stmt = null;
+
+			//Rest_search r = new Rest_search();
+			try {
+
+				connexion = DriverManager.getConnection(
+						"jdbc:postgresql://localhost:5432/extractstweet", "postgres",
+						"s");
+				connexion.setAutoCommit(false);
+				stmt = connexion.createStatement();
+				String sql ="";
+				for(int i=0;i<this.getSearch().getKeywords().size();i++)
+				{
+					sql = "INSERT INTO \"Keyword\" VALUES ("+this.getSearch().getLanguage()+","
+							+this.getSearch().getKeywords().get(i)+")";
+				}
+
+				int rs = stmt.executeUpdate(sql);
+
+
+				//rs.close();
+				System.out.println("Connexion effective !");
+			}catch(Exception e){
+				//Handle errors for Class.forName
+				e.printStackTrace();
+			}		
+		}
+	}
+
+
+}

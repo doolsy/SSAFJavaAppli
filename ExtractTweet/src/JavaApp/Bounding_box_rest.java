@@ -2,6 +2,7 @@ package JavaApp;
 
 public class Bounding_box_rest {
 
+	private int id;
 	private double center_longitude;
 	private double center_latitude;
 	private double radius;
@@ -10,9 +11,10 @@ public class Bounding_box_rest {
 
 		unit = "km";
 	}
-	public Bounding_box_rest(double center_longitude, double center_latitude,
+	public Bounding_box_rest(int id,double center_longitude, double center_latitude,
 			double radius, String unit) {
 		super();
+		this.setId(id);
 		this.center_longitude = center_longitude;
 		this.center_latitude = center_latitude;
 		this.radius = radius;
@@ -41,6 +43,12 @@ public class Bounding_box_rest {
 	}
 	public void setUnit(String unit) {
 		this.unit = unit;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	

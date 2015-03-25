@@ -27,6 +27,7 @@ public class Streaming_search extends Search{
 
 	public Streaming_search() {
 		super();
+		this.bb = new ArrayList<Bounding_box_stream>();
 	}
 
 	public ArrayList<Bounding_box_stream> getBb() {
@@ -39,12 +40,13 @@ public class Streaming_search extends Search{
 
 
 
+	@SuppressWarnings("unchecked")
 	public void parse()
 	{
-		String API="", account_name="",language="",date="";
+		@SuppressWarnings("unused")
+		String API="", account_name="",language="";
 
 		ArrayList<String> bounding_box =new ArrayList<String>();
-		int hr[] = {0,0};
 		//hr ={0,0};
 		int nb_rt[] = {0,0};
 
@@ -72,7 +74,7 @@ public class Streaming_search extends Search{
 			users = (JSONArray) jsonObject.get("users");
 			bb = (JSONArray) jsonObject.get("bounding_box");
 
-			search_title = (String) jsonObject.get("search_title"); // à  traiter
+			search_title = (String) jsonObject.get("search_name"); // à  traiter
 
 			search_timestamp = (String) jsonObject.get("search_timestamp");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -113,7 +115,7 @@ public class Streaming_search extends Search{
 			}
 			if(bb != null)
 			{
-				Iterator<String> it = bounding_box.iterator();
+				Iterator<String> it = bb.iterator();
 				while (it.hasNext()) {
 					bounding_box.add(it.next());//a changer
 				}
@@ -136,6 +138,7 @@ public class Streaming_search extends Search{
 				this.setNb_tweet(Integer.parseInt(number_of_tweet));
 			API = ap;
 			account_name = account;
+			this.setSearch_title(search_title);
 			this.setSearch_time(search_time);
 
 		} 
@@ -179,12 +182,14 @@ public class Streaming_search extends Search{
 				rs = stmt.executeQuery(sql);
 
 				while(rs.next()){
+					int id = rs.getInt("id_bb");
 					double long1 = rs.getDouble("longitude1");
 					double lat1 = rs.getDouble("latitude1");
 					double long2 = rs.getDouble("longitude2");
 					double lat2 = rs.getDouble("latitude2");
 					//double radius = rs.getDouble("radius");
-					Bounding_box_stream bbr = new Bounding_box_stream(long1,lat1,long2,lat2);
+					//System.out.println(id+" "+long1+" "+long2+" "+lat1+" "+lat2);
+					Bounding_box_stream bbr = new Bounding_box_stream(id,long1,lat1,long2,lat2);
 
 					this.add_bounding_box(bbr);
 				}
@@ -214,30 +219,43 @@ public class Streaming_search extends Search{
 	}
 
 	private void add_bounding_box(Bounding_box_stream bbr) {
-		this.bb.add(bbr);
+		this.getBb().add(bbr);
 
 	}
 
 	public boolean containHashtag(String text)
 	{
+		String[] s = text.toLowerCase().split(" ");
 		for(int i=0;i<hashtags.size();i++)
-			if(text.contains(hashtags.get(i)))
-				return true;
+			//if(text.toLowerCase().contains(hashtags.get(i).toLowerCase()))
+				//return true;
+		{
+			for(int j=0;j<s.length;j++)
+				if(s[j].equals(hashtags.get(i).toLowerCase()))
+					return true;
+		}
 		return false;
 	}
 	public boolean containKeywords(String text)
 	{
 		for(int i=0;i<keywords.size();i++)
-			if(text.contains(keywords.get(i)))
+			if(text.toLowerCase().contains(keywords.get(i).toLowerCase()))
 				return true;
 		return false;
 	}
 
 	public boolean contain_an_user(String text)
 	{
+		String[] s = text.toLowerCase().split(" ");
 		for(int i=0;i<in_reply_to.size();i++)
-			if(text.contains(in_reply_to.get(i)))
-				return true;
+		{
+			for(int j=0;j<s.length;j++)
+				if(s[j].equals(in_reply_to.get(i).toLowerCase()))
+					return true;
+		}
+//		for(int i=0;i<in_reply_to.size();i++)
+//			if(text.contains(in_reply_to.get(i)))
+//				return true;
 		return false;
 	}
 	public void search_and_insert()
@@ -257,11 +275,12 @@ public class Streaming_search extends Search{
 		StatusListener listener = new StatusListener(){
 
 			public void onStatus(Status status) {
-				if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max))
-					if(users.size() == 0 || 
-					(users.size() != 0 && (containKeywords(status.getText()) || containHashtag(status.getText()))))
-						if(in_reply_to.size() == 0 || contain_an_user(status.getText()))
-							System.out.println(status.getUser().getName() + " : " + status.getText() + " langue :"+status.getLang());
+				if(getBb().size()  == 0)
+					if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max))
+						if(users.size() == 0 || 
+						((users.size() != 0 || bb.size() != 0) && (containKeywords(status.getText()) || containHashtag(status.getText()))))
+							if(in_reply_to.size() == 0 || contain_an_user(status.getText()))
+								System.out.println(status.getUser().getName() + " : " + status.getText() + " langue :"+status.getLang());
 				//System.out.println("RAW JSON: " + TwitterObjectFactory.getRawJSON(status));
 			}
 
@@ -303,20 +322,45 @@ public class Streaming_search extends Search{
 		}
 		FilterQuery fq = new FilterQuery();
 		fq.follow(follow);
-		/*java.lang.String langue[] = new java.lang.String[1];
-		langue[0] = this.language;
-		fq.language(langue);
-		fq.count(nb_tweet);*/
-		double[][] locations = { { -122.75d ,36.8d }, { -121.75d, 37.8d }  };
-		fq.locations(locations);
+		if(this.getLanguage() != "")
+		{
+			java.lang.String langue[] = new java.lang.String[1];
+			langue[0] = this.language;
+			fq.language(langue);
+		}
+		if(nb_tweet != 0)
+			fq.count(nb_tweet);
 
 		if(this.getusers().size() == 0)
 		{
-			String[] kw_ht = build_kw_and_ht();
-			twitterStream.filter(fq.track(kw_ht));
+			if(this.getBb().size() != 0)
+			{
+				//				double[][] locations = { { -124.2718505859375 ,29.2571470753506 }, 
+//						{ -75.60778808593727,50.736455137010715 } };
+				double[][] locations = new double[(this.getBb().size())*2][2];
+				int i =0;
+				for(Bounding_box_stream b : this.getBb())
+				{
+					System.out.println(b.getLongitude1()+","+b.getLatitude1());
+					locations[i][0] = b.getLongitude1();
+					locations[i][1] = b.getLatitude2();
+					locations[i+1][0] = b.getLongitude2();
+					locations[i+1][1] = b.getLatitude1();
+					i+=2;
+				}		
+				fq.locations(locations);
+				twitterStream.filter(fq);
+			}
+			else
+			{
+				String[] kw_ht = build_kw_and_ht();
+				twitterStream.filter(fq.track(kw_ht));
+			}
 		}
 		else
+		{
 			twitterStream.filter(fq);
+		}
 
 	}
 

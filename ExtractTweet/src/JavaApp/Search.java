@@ -16,7 +16,7 @@ public abstract class Search {
 	protected int nb_rt_max;
 	protected User_info ui;
 	protected int nb_tweet;
-	
+	protected Insert_class insert;
 	
 	public Search(){
 		search_title ="";
@@ -29,6 +29,7 @@ public abstract class Search {
 		nb_rt_min = nb_rt_max =0;
 		ui = new User_info();
 		nb_tweet = 0;
+		insert = new Insert_class();
  
 	}
 
@@ -145,6 +146,15 @@ public abstract class Search {
 
 	public void setNb_rt_max(int nb_rt_max) {
 		this.nb_rt_max = nb_rt_max;
+	}
+
+	
+	public Insert_class getInsert() {
+		return insert;
+	}
+
+	public void setInsert(Insert_class insert) {
+		this.insert = insert;
 	}
 
 	public void add_user(String e)

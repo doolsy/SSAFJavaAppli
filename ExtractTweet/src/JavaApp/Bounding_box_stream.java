@@ -2,6 +2,7 @@ package JavaApp;
 
 public class Bounding_box_stream {
 
+	private int id;
 	private double longitude1;
 	private double latitude1;
 	private double longitude2;
@@ -9,6 +10,7 @@ public class Bounding_box_stream {
 	
 	
 	public Bounding_box_stream() {
+		id = 0;
 		longitude1 = 0;
 		latitude1 = 0;
 		longitude2 = 0;
@@ -16,9 +18,10 @@ public class Bounding_box_stream {
 	}
 
 
-	public Bounding_box_stream(double longitude1, double latitude1,
+	public Bounding_box_stream(int id,double longitude1, double latitude1,
 			double longitude2, double latitude2) {
 		super();
+		this.setId(id);
 		this.longitude1 = longitude1;
 		this.latitude1 = latitude1;
 		this.longitude2 = longitude2;
@@ -63,6 +66,16 @@ public class Bounding_box_stream {
 
 	public void setLatitude2(double latitude2) {
 		this.latitude2 = latitude2;
+	}
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	

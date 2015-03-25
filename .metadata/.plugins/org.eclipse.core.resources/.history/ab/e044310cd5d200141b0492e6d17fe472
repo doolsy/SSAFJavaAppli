@@ -228,7 +228,7 @@ public class Streaming_search extends Search{
 		String[] s = text.toLowerCase().split(" ");
 		for(int i=0;i<hashtags.size();i++)
 			//if(text.toLowerCase().contains(hashtags.get(i).toLowerCase()))
-			//return true;
+				//return true;
 		{
 			for(int j=0;j<s.length;j++)
 				if(s[j].equals(hashtags.get(i).toLowerCase()))
@@ -253,9 +253,9 @@ public class Streaming_search extends Search{
 				if(s[j].equals(in_reply_to.get(i).toLowerCase()))
 					return true;
 		}
-		//		for(int i=0;i<in_reply_to.size();i++)
-		//			if(text.contains(in_reply_to.get(i)))
-		//				return true;
+//		for(int i=0;i<in_reply_to.size();i++)
+//			if(text.contains(in_reply_to.get(i)))
+//				return true;
 		return false;
 	}
 	public void search_and_insert()
@@ -275,11 +275,10 @@ public class Streaming_search extends Search{
 		StatusListener listener = new StatusListener(){
 
 			public void onStatus(Status status) {
-				if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max))
-					if(users.size() == 0 || 
-					(users.size() != 0 && (containKeywords(status.getText()) || containHashtag(status.getText()))))
-						if(in_reply_to.size() == 0 || contain_an_user(status.getText()))
-							if (bb.size() == 0 || (bb.size()!=0 && (containKeywords(status.getText()) || containHashtag(status.getText()))))
+					if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max))
+						if(users.size() == 0 || 
+						((users.size() != 0 || bb.size() != 0) && (containKeywords(status.getText()) || containHashtag(status.getText()))))
+							if(in_reply_to.size() == 0 || contain_an_user(status.getText()))
 								System.out.println(status.getUser().getName() + " : " + status.getText() + " langue :"+status.getLang());
 				//System.out.println("RAW JSON: " + TwitterObjectFactory.getRawJSON(status));
 			}
@@ -335,17 +334,17 @@ public class Streaming_search extends Search{
 		{
 			if(this.getBb().size() != 0)
 			{
-				//								double[][] locations = { { -124.2718505859375 ,29.2571470753506 }, 
-				//						{ -75.60778808593727,50.736455137010715 } };
+//								double[][] locations = { { -124.2718505859375 ,29.2571470753506 }, 
+//						{ -75.60778808593727,50.736455137010715 } };
 				double[][] locations = new double[(this.getBb().size())*2][2];
 				int i =0;
 				for(Bounding_box_stream b : this.getBb())
 				{
 					System.out.println(b.getLongitude1()+","+b.getLatitude1());
 					locations[i][0] = b.getLongitude1();
-					locations[i][1] = b.getLatitude1();
+					locations[i][1] = b.getLatitude2();
 					locations[i+1][0] = b.getLongitude2();
-					locations[i+1][1] = b.getLatitude2();
+					locations[i+1][1] = b.getLatitude1();
 					i+=2;
 				}		
 				fq.locations(locations);

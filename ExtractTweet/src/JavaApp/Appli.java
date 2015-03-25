@@ -60,10 +60,6 @@ public class Appli {
 		{
 			Rest_search r = new Rest_search();
 			r.parse();
-			Insert_class i = new Insert_class();
-			i.setSearch(r);
-			r.setInsert(i);
-			i.insert_parameters();
 			r.search_and_insert();
 
 			//System.out.println((38284.3456)/1000);
@@ -73,10 +69,6 @@ public class Appli {
 		{
 			Streaming_search r= new Streaming_search();
 			r.parse();
-			Insert_class i = new Insert_class();
-			i.setSearch(r);
-			r.setInsert(i);
-			//i.insert_parameters();
 			r.search_and_insert();
 		}
 

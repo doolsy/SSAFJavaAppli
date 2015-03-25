@@ -12,11 +12,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
 import twitter4j.*;
 import twitter4j.auth.AccessToken;
 
@@ -89,39 +87,24 @@ public class Rest_search extends Search {
 	}
 	public boolean containHashtag(String text)
 	{
-		String[] s = text.toLowerCase().split(" ");
 		for(int i=0;i<hashtags.size();i++)
-		{
-			for(int j=0;j<s.length;j++)
-				if(s[j].equals(hashtags.get(i).toLowerCase()))
-					return true;
-		}
-//		for(int i=0;i<hashtags.size();i++)
-//			if(text.toLowerCase().contains(hashtags.get(i).toLowerCase()))
-//				return true;
+			if(text.contains(hashtags.get(i)))
+				return true;
 		return false;
 	}
 	public boolean containKeywords(String text)
 	{
 		for(int i=0;i<keywords.size();i++)
-			if(text.toLowerCase().contains(keywords.get(i).toLowerCase()))
+			if(text.contains(keywords.get(i)))
 				return true;
 		return false;
-		
 	}
 
 	public boolean contain_an_user(String text)
 	{
-		String[] s = text.toLowerCase().split(" ");
 		for(int i=0;i<in_reply_to.size();i++)
-		{
-			for(int j=0;j<s.length;j++)
-				if(s[j].equals(in_reply_to.get(i).toLowerCase()))
-					return true;
-		}
-//		for(int i=0;i<in_reply_to.size();i++)
-//			if(text.contains(in_reply_to.get(i)))
-//				return true;
+			if(text.contains(in_reply_to.get(i)))
+				return true;
 		return false;
 	}
 	public String build_kw_and_ht()
@@ -136,8 +119,7 @@ public class Rest_search extends Search {
 				else
 					kw_ht += keywords.get(i)+" OR ";
 			}
-			if(keywords.get(keywords.size()-1).indexOf(" ") != -1)
-				kw_ht += "\""+keywords.get(keywords.size()-1)+"\"";
+			kw_ht += keywords.get(keywords.size()-1);
 		}
 
 		if(hashtags.size() != 0 && !(kw_ht.equals("")))
@@ -188,7 +170,7 @@ public class Rest_search extends Search {
 			users = (JSONArray) jsonObject.get("users");
 			bb = (JSONArray) jsonObject.get("bounding_box");
 
-			search_title = (String) jsonObject.get("search_name"); // à  traiter
+			search_title = (String) jsonObject.get("search_title"); // à  traiter
 
 			search_timestamp = (String) jsonObject.get("search_timestamp");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -229,7 +211,7 @@ public class Rest_search extends Search {
 			}
 			if(bb != null)
 			{
-				Iterator<String> it = bb.iterator();
+				Iterator<String> it = bounding_box.iterator();
 				while (it.hasNext()) {
 					bounding_box.add(it.next());//a changer
 				}
@@ -265,7 +247,6 @@ public class Rest_search extends Search {
 				this.setNb_tweet(Integer.parseInt(number_of_tweet));
 			API = ap;
 			account_name = account;
-			this.setSearch_title(search_title);
 			this.setSearch_time(search_time);
 
 		} 
@@ -309,11 +290,11 @@ public class Rest_search extends Search {
 				rs = stmt.executeQuery(sql);
 
 				while(rs.next()){
-					int id = rs.getInt("id_bb");
 					double clong = rs.getDouble("center_longitude");
 					double clat = rs.getDouble("center_latitude");
 					double radius = rs.getDouble("radius");
-					Bounding_box_rest bbr = new Bounding_box_rest(id,clong,clat,(radius)/1000,"km");
+					Bounding_box_rest bbr = new Bounding_box_rest(clong,clat,(radius)/1000,"km");
+
 					this.add_bounding_box(bbr);
 				}
 			}
@@ -348,7 +329,7 @@ public class Rest_search extends Search {
 		String kw_ht = "";
 
 		if(nb_tweet == 0)
-			setNb_tweet(500);// = 500;
+			nb_tweet = 500;
 		AccessToken aToken;
 
 		// Creation d'un objet Twitter
@@ -506,9 +487,7 @@ public class Rest_search extends Search {
 
 			else{
 
-				
 				kw_ht = build_kw_and_ht();
-				System.out.println(kw_ht);
 				Query query = new Query(kw_ht);
 				if(language != "")
 					query.setLang(language);
@@ -538,60 +517,25 @@ public class Rest_search extends Search {
 										status.getLang());//inserer dans la bdd
 
 					}
-					
+					//System.out.println(i);
 					query=result.nextQuery();
 					if(query!=null)
 						result=t.search(query);
-				}while(query!=null && i<(nb_tweet/100));
+				}while(query!=null && i<=(nb_tweet/100));
 			}
 		}
 		else
 		{
-			//System.out.println("omg");
-			for(Bounding_box_rest b : bb)
-			{
-				//System.out.println(b.getRadius());
-				kw_ht = build_kw_and_ht();
-				Query query = new Query(kw_ht);
-				if(language != "")
-					query.setLang(language);
-				if(date != "")
-					query.setSince(date);
-				if(language != "")
-					query.setLang(language);
-				query.setCount(200);
-				int i=0;
-				GeoLocation location = new GeoLocation(b.getCenter_latitude(),b.getCenter_longitude());
-				query.geoCode(location,b.getRadius(), b.getUnit());
-				QueryResult result = t.search(query);
-				
-				do{
-					i++;
-					List<Status> tweets = result.getTweets();
-					System.out.println(tweets.size());
-					for(Status status: tweets){
-						if(hour_min != 0 && hour_max != 0)
-						{
-							if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
-								if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-
-									System.out.println(status.getUser().getName() + ":" +
-											status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
-						}
-						else //pas de filtre par heure
-							if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-								System.out.println(status.getUser().getName() + ":" +
-										status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt())+ " "+
-										status.getLang());//inserer dans la bdd
-
-					}
-					query=result.nextQuery();
-					if(query!=null)
-						result=t.search(query);
-				}while(query!=null && i<(nb_tweet/100));
-				
-				
-			}
+			//			Query query = new Query();
+			//			if(bb.getUnit().equals( "km"))
+			//				query.setGeoCode(new GeoLocation(bb.getCenter_longitude(),bb.getCenter_latitude()),bb.getRadius(), Query.KILOMETERS);
+			//			else
+			//				query.setGeoCode(new GeoLocation(bb.getCenter_longitude(),bb.getCenter_latitude()),bb.getRadius(), Query.MILES);
+			//			QueryResult result = t.search(query);
+			//			for (Status status : result.getTweets()) {
+			//				//inserer dans la bbb
+			//				System.out.println("@" + status.getUser().getScreenName() + ":" + status.getText());
+			//			}
 		}
 
 

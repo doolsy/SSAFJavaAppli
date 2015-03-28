@@ -65,22 +65,6 @@ public class User_info {
 	public void setId(int id) {
 		this.iua_id = id;
 	}
-
-	public int getUt_id() {
-		return ut_id;
-	}
-
-	public void setUt_id(int ut_id) {
-		this.ut_id = ut_id;
-	}
-
-	public int getIua_id() {
-		return iua_id;
-	}
-
-	public void setIua_id(int iua_id) {
-		this.iua_id = iua_id;
-	}
 	
 	
 	

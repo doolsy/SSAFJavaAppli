@@ -289,40 +289,19 @@ public class Rest_search extends Search {
 
 			String sql ="SELECT * FROM \"Info_user_app\" WHERE account_name = '"+account_name+"'";
 			ResultSet rs = stmt.executeQuery(sql);
-			int iua_id = 0;
-			String ck="",cks="",at="",ats="";
+
 			while(rs.next()){
 				//Retrieve by column name
-				iua_id = rs.getInt("id_iua");
-				ck = rs.getString("consumer_key");
-				cks = rs.getString("consumer_secret");
-				at = rs.getString("access_token");
-				ats = rs.getString("access_token_secret");
-
-			}
-			
-			sql = "SELECT * FROM \"Has1\" WHERE id_iua="+iua_id;
-			rs = stmt.executeQuery(sql);
-			while(rs.next()){
-				//Retrieve by column name
-				int ut_id = rs.getInt("id_ut");
+				int id = rs.getInt("id_iua");
+				String ck = rs.getString("consumer_key");
+				String cks = rs.getString("consumer_secret");
+				String at = rs.getString("access_token");
+				String ats = rs.getString("access_token_secret");
 
 
-				User_info ui = new User_info(ut_id,iua_id,ck,cks,at,ats);
+				User_info ui = new User_info(id,ck,cks,at,ats);
 				this.setUi(ui);
 			}
-//			while(rs.next()){
-//				//Retrieve by column name
-//				int id = rs.getInt("id_iua");
-//				String ck = rs.getString("consumer_key");
-//				String cks = rs.getString("consumer_secret");
-//				String at = rs.getString("access_token");
-//				String ats = rs.getString("access_token_secret");
-//
-//
-//				User_info ui = new User_info(id,ck,cks,at,ats);
-//				this.setUi(ui);
-//			}
 			for(int i=0;i<bounding_box.size();i++)
 			{
 				//recuperation des valeurs de chaque bounding box à travers leur nom

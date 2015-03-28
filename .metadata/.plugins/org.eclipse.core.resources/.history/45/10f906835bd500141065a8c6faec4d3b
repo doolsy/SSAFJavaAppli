@@ -67,7 +67,7 @@ public class Appli {
 			//r.search_and_insert();
 
 			//System.out.println((38284.3456)/1000);
-			//System.out.println(r.getUi().getUt_id());
+			System.out.println(r.getUi().getUt_id());
 			return;
 		}
 		else

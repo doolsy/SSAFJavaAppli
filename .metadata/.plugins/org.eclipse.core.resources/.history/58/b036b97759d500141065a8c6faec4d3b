@@ -2,8 +2,7 @@ package JavaApp;
 
 public class User_info {
 
-	private int ut_id;
-	private int iua_id;
+	private int id;
 	private String consumer_key;
 	private String consumer_secret;
 	private String access_token;
@@ -15,11 +14,10 @@ public class User_info {
 		super();
 	}
 
-	public User_info(int ut_id,int iua_id,String consumer_key, String consumer_secret,
+	public User_info(int id,String consumer_key, String consumer_secret,
 			String access_token, String access_token_secret) {
 		super();
-		this.ut_id = ut_id;
-		this.iua_id = iua_id;
+		this.id = id;
 		this.consumer_key = consumer_key;
 		this.consumer_secret = consumer_secret;
 		this.access_token = access_token;
@@ -59,27 +57,11 @@ public class User_info {
 	}
 
 	public int getId() {
-		return iua_id;
+		return id;
 	}
 
 	public void setId(int id) {
-		this.iua_id = id;
-	}
-
-	public int getUt_id() {
-		return ut_id;
-	}
-
-	public void setUt_id(int ut_id) {
-		this.ut_id = ut_id;
-	}
-
-	public int getIua_id() {
-		return iua_id;
-	}
-
-	public void setIua_id(int iua_id) {
-		this.iua_id = iua_id;
+		this.id = id;
 	}
 	
 	

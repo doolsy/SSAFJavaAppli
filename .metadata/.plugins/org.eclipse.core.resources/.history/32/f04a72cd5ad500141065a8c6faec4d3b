@@ -178,7 +178,7 @@ public class Streaming_search extends Search{
 			rs = stmt.executeQuery(sql);
 			while(rs.next()){
 				//Retrieve by column name
-				int ut_id = rs.getInt("id_ut");
+				int ut_id = rs.getInt("id_iua");
 
 
 				User_info ui = new User_info(ut_id,iua_id,ck,cks,at,ats);

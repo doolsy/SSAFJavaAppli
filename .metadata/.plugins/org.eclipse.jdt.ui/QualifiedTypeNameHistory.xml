@@ -7,11 +7,19 @@
 <fullyQualifiedTypeName name="JavaApp.Rest_search"/>
 <fullyQualifiedTypeName name="JavaApp.User_info"/>
 <fullyQualifiedTypeName name="org.json.simple.parser.JSONParser"/>
-<fullyQualifiedTypeName name="java.util.Date"/>
-<fullyQualifiedTypeName name="java.lang.System"/>
 <fullyQualifiedTypeName name="JavaApp.Bounding_box_rest"/>
 <fullyQualifiedTypeName name="java.text.SimpleDateFormat"/>
 <fullyQualifiedTypeName name="twitter4j.conf.ConfigurationBuilder"/>
 <fullyQualifiedTypeName name="JavaApp.Streaming_search"/>
 <fullyQualifiedTypeName name="twitter4j.Twitter"/>
+<fullyQualifiedTypeName name="java.sql.Date"/>
+<fullyQualifiedTypeName name="java.lang.ArrayStoreException"/>
+<fullyQualifiedTypeName name="twitter4j.Place"/>
+<fullyQualifiedTypeName name="java.sql.Timestamp"/>
+<fullyQualifiedTypeName name="java.lang.String"/>
+<fullyQualifiedTypeName name="java.lang.OutOfMemoryError"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="java.util.Date"/>
+<fullyQualifiedTypeName name="java.text.DateFormatSymbols"/>
 </qualifiedTypeNameHistroy>

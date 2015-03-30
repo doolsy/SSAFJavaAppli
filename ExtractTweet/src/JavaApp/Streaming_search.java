@@ -23,11 +23,12 @@ import twitter4j.conf.ConfigurationBuilder;
 public class Streaming_search extends Search{
 
 	private ArrayList<Bounding_box_stream> bb;
-
+	private int count;
 
 	public Streaming_search() {
 		super();
 		this.bb = new ArrayList<Bounding_box_stream>();
+		this.count = 0;
 	}
 
 	public ArrayList<Bounding_box_stream> getBb() {
@@ -40,6 +41,14 @@ public class Streaming_search extends Search{
 
 
 
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
 	@SuppressWarnings("unchecked")
 	public void parse()
 	{
@@ -47,7 +56,6 @@ public class Streaming_search extends Search{
 		String API="", account_name="",language="";
 
 		ArrayList<String> bounding_box =new ArrayList<String>();
-		//hr ={0,0};
 		int nb_rt[] = {0,0};
 
 
@@ -173,7 +181,7 @@ public class Streaming_search extends Search{
 				ats = rs.getString("access_token_secret");
 
 			}
-			
+
 			sql = "SELECT * FROM \"Has1\" WHERE id_iua="+iua_id;
 			rs = stmt.executeQuery(sql);
 			while(rs.next()){
@@ -275,8 +283,9 @@ public class Streaming_search extends Search{
 		cb.setOAuthConsumerSecret(this.getUi().getConsumer_secret());
 		cb.setOAuthAccessToken(this.getUi().getAccess_token());
 		cb.setOAuthAccessTokenSecret(this.getUi().getAccess_token_secret());
+		cb.setJSONStoreEnabled(true);
 
-		TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
+		final TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
 		//===================================================================================//   
 
 		//===========================RECUPERATION DES TWEETS=================================//  
@@ -289,7 +298,61 @@ public class Streaming_search extends Search{
 					(users.size() != 0 && (containKeywords(status.getText()) || containHashtag(status.getText()))))
 						if(in_reply_to.size() == 0 || contain_an_user(status.getText()))
 							if (bb.size() == 0 || (bb.size()!=0 && (containKeywords(status.getText()) || containHashtag(status.getText()))))
-								System.out.println(status.getUser().getName() + " : " + status.getText() + " langue :"+status.getLang());
+							{
+								try {
+									getInsert().add(status);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+								
+								setCount(count+1);
+								if(getNb_tweet() != 0 && getCount() == getNb_tweet())//stopper la récherche
+								{
+									Connection connexion = null;
+									Statement stmt = null;
+
+									try {
+
+										connexion = DriverManager.getConnection(
+												"jdbc:postgresql://localhost:5432/extractstweet", "postgres",
+												"s");
+										connexion.setAutoCommit(false);
+										stmt = connexion.createStatement();
+										String sql = "UPDATE \"Search_parameters\" SET current = FALSE WHERE search_title ='"+getSearch_title()+"'";
+										stmt.executeUpdate(sql);
+										connexion.commit();
+										twitterStream.shutdown();
+									}catch(SQLException se){
+										se.printStackTrace();
+										try{
+											if(connexion!=null)
+												connexion.rollback();
+										}catch(SQLException se2){
+											se2.printStackTrace();
+										}//end try
+
+									}catch(Exception e){
+										e.printStackTrace();
+									}finally{
+										//finally block used to close resources
+										try{
+											if(stmt!=null)
+												stmt.close();
+
+										}catch(SQLException se2){
+										}
+										try{
+											if(connexion!=null)
+												connexion.close();
+										}catch(SQLException se){
+											se.printStackTrace();
+										}//end finally try
+									}//end try
+									
+									
+								}
+							}
+
 				//System.out.println("RAW JSON: " + TwitterObjectFactory.getRawJSON(status));
 			}
 
@@ -303,7 +366,7 @@ public class Streaming_search extends Search{
 
 
 			public void onScrubGeo(long arg0, long arg1) {
-				// TODO Auto-generated method stub
+
 			}
 			public void onStallWarning(StallWarning arg0) {
 			}
@@ -337,8 +400,8 @@ public class Streaming_search extends Search{
 			langue[0] = this.language;
 			fq.language(langue);
 		}
-		if(nb_tweet != 0)
-			fq.count(nb_tweet);
+		//		if(nb_tweet != 0)
+		//			fq.count(nb_tweet);
 
 		if(this.getusers().size() == 0)
 		{

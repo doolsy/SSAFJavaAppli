@@ -5,8 +5,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -63,11 +65,10 @@ public class Appli {
 			Insert_class i = new Insert_class();
 			i.setSearch(r);
 			r.setInsert(i);
-			//i.insert_parameters();
-			//r.search_and_insert();
+			i.insert_parameters();
+			r.search_and_insert();
 
-			//System.out.println((38284.3456)/1000);
-			//System.out.println(r.getUi().getUt_id());
+
 			return;
 		}
 		else
@@ -77,8 +78,9 @@ public class Appli {
 			Insert_class i = new Insert_class();
 			i.setSearch(r);
 			r.setInsert(i);
-			//i.insert_parameters();
-			//r.search_and_insert();
+			i.insert_parameters();
+			r.search_and_insert();
+
 		}
 
 

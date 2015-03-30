@@ -19,6 +19,7 @@ import org.json.simple.parser.JSONParser;
 
 import twitter4j.*;
 import twitter4j.auth.AccessToken;
+import twitter4j.conf.ConfigurationBuilder;
 
 @SuppressWarnings("unused")
 public class Rest_search extends Search {
@@ -96,9 +97,9 @@ public class Rest_search extends Search {
 				if(s[j].equals(hashtags.get(i).toLowerCase()))
 					return true;
 		}
-//		for(int i=0;i<hashtags.size();i++)
-//			if(text.toLowerCase().contains(hashtags.get(i).toLowerCase()))
-//				return true;
+		//		for(int i=0;i<hashtags.size();i++)
+		//			if(text.toLowerCase().contains(hashtags.get(i).toLowerCase()))
+		//				return true;
 		return false;
 	}
 	public boolean containKeywords(String text)
@@ -107,7 +108,7 @@ public class Rest_search extends Search {
 			if(text.toLowerCase().contains(keywords.get(i).toLowerCase()))
 				return true;
 		return false;
-		
+
 	}
 
 	public boolean contain_an_user(String text)
@@ -119,9 +120,9 @@ public class Rest_search extends Search {
 				if(s[j].equals(in_reply_to.get(i).toLowerCase()))
 					return true;
 		}
-//		for(int i=0;i<in_reply_to.size();i++)
-//			if(text.contains(in_reply_to.get(i)))
-//				return true;
+		//		for(int i=0;i<in_reply_to.size();i++)
+		//			if(text.contains(in_reply_to.get(i)))
+		//				return true;
 		return false;
 	}
 	public String build_kw_and_ht()
@@ -138,6 +139,8 @@ public class Rest_search extends Search {
 			}
 			if(keywords.get(keywords.size()-1).indexOf(" ") != -1)
 				kw_ht += "\""+keywords.get(keywords.size()-1)+"\"";
+			else
+				kw_ht += keywords.get(keywords.size()-1);
 		}
 
 		if(hashtags.size() != 0 && !(kw_ht.equals("")))
@@ -153,13 +156,13 @@ public class Rest_search extends Search {
 		return kw_ht;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void parse()
 	{
 		String API="", account_name="",language="",date="";
 
 		ArrayList<String> bounding_box =new ArrayList<String>();
 		int hr[] = {0,0};
-		//hr ={0,0};
 		int nb_rt[] = {0,0};
 
 
@@ -300,7 +303,7 @@ public class Rest_search extends Search {
 				ats = rs.getString("access_token_secret");
 
 			}
-			
+
 			sql = "SELECT * FROM \"Has1\" WHERE id_iua="+iua_id;
 			rs = stmt.executeQuery(sql);
 			while(rs.next()){
@@ -311,18 +314,7 @@ public class Rest_search extends Search {
 				User_info ui = new User_info(ut_id,iua_id,ck,cks,at,ats);
 				this.setUi(ui);
 			}
-//			while(rs.next()){
-//				//Retrieve by column name
-//				int id = rs.getInt("id_iua");
-//				String ck = rs.getString("consumer_key");
-//				String cks = rs.getString("consumer_secret");
-//				String at = rs.getString("access_token");
-//				String ats = rs.getString("access_token_secret");
-//
-//
-//				User_info ui = new User_info(id,ck,cks,at,ats);
-//				this.setUi(ui);
-//			}
+
 			for(int i=0;i<bounding_box.size();i++)
 			{
 				//recuperation des valeurs de chaque bounding box à travers leur nom
@@ -374,11 +366,15 @@ public class Rest_search extends Search {
 
 		// Creation d'un objet Twitter
 
-		Twitter t = new TwitterFactory().getInstance();
-
-		t.setOAuthConsumer(ui.getConsumer_key(), ui.getConsumer_secret());
-		aToken = new AccessToken(ui.getAccess_token(), ui.getAccess_token_secret());
-		t.setOAuthAccessToken(aToken);
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+		cb.setDebugEnabled(true);
+		cb.setOAuthConsumerKey(this.getUi().getConsumer_key());
+		cb.setOAuthConsumerSecret(this.getUi().getConsumer_secret());
+		cb.setOAuthAccessToken(this.getUi().getAccess_token());
+		cb.setOAuthAccessTokenSecret(this.getUi().getAccess_token_secret());
+		cb.setJSONStoreEnabled(true);
+		//TwitterFactory tf = new TwitterFactory(cb.build());
+		Twitter t = new TwitterFactory(cb.build()).getInstance();
 
 		if(bb.size() == 0)
 		{
@@ -405,36 +401,30 @@ public class Rest_search extends Search {
 									if(sdf.parse(d1).before(sdf.parse(d2)))
 										if(hour_min != 0 && hour_max != 0)
 										{
-											if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
+											if((status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max) ||
+													(status.getCreatedAt().getHours() ==0 && hour_max == 24))
 
 												if(language.equals("") || status.getLang().equals(language))
 													if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-														System.out.println(status.getUser().getName() + ":" +
-																status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
-										}
+														this.getInsert().add(status);										}
 										else //pas de filtre par heure
 											if(language.equals("") || status.getLang().equals(language))
 												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-													System.out.println(status.getUser().getName() + ":" +
-															status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
-
+													this.getInsert().add(status);
 								}
 								else
 								{
 									if(hour_min != 0 && hour_max != 0)
 									{
-										if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
+										if((status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max) ||
+												(status.getCreatedAt().getHours() ==0 && hour_max == 24))
 											if(language.equals("") || status.getLang().equals(language))
 												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-													System.out.println(status.getUser().getName() + ":" +
-															status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
-									}
+													this.getInsert().add(status);									}
 									else //pas de filtre par heure
 										if(language.equals("") || status.getLang().equals(language))
 											if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-												System.out.println(status.getUser().getName() + ":" +
-														status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
-
+												this.getInsert().add(status);
 								}
 							}
 							if(containKeywords(status.getText()))
@@ -447,35 +437,29 @@ public class Rest_search extends Search {
 									if(sdf.parse(d1).before(sdf.parse(d2)))
 										if(hour_min != 0 && hour_max != 0)
 										{
-											if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
+											if((status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max) ||
+													(status.getCreatedAt().getHours() ==0 && hour_max == 24))
 												if(language.equals("") || status.getLang().equals(language))
 													if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-														System.out.println(status.getUser().getName() + ":" +
-																status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
-										}
+														this.getInsert().add(status);										}
 										else //pas de filtre par heure
 											if(language.equals("") || status.getLang().equals(language))
 												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-													System.out.println(status.getUser().getName() + ":" +
-															status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
-
+													this.getInsert().add(status);
 								}
 								else
 								{
 									if(hour_min != 0 && hour_max != 0)
 									{
-										if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
+										if((status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max) ||
+												(status.getCreatedAt().getHours() ==0 && hour_max == 24))
 											if(language.equals("") || status.getLang().equals(language))
 												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-													System.out.println(status.getUser().getName() + ":" +
-															status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
-									}
+													this.getInsert().add(status);									}
 									else //pas de filtre par heure
 										if(language.equals("") || status.getLang().equals(language))
 											if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-												System.out.println(status.getUser().getName() + ":" +
-														status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()) );//inserer dans la bdd
-
+												this.getInsert().add(status);
 								}
 							}
 							if(!containKeywords(status.getText()) && containHashtag(status.getText()))
@@ -488,36 +472,30 @@ public class Rest_search extends Search {
 									if(sdf.parse(d1).before(sdf.parse(d2)))
 										if(hour_min != 0 && hour_max != 0)
 										{
-											if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
+											if((status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max) ||
+													(status.getCreatedAt().getHours() ==0 && hour_max == 24))
 												if(language.equals("") || status.getLang().equals(language))
 													if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-														System.out.println(status.getUser().getName() + ":" +
-																status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
-										}
+														this.getInsert().add(status);										}
 										else //pas de filtre par heure
 											if(language.equals("") || status.getLang().equals(language))
 												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-													System.out.println(status.getUser().getName() + ":" +
-															status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
-
+													this.getInsert().add(status);
 								}
 								else
 								{
 									if(hour_min != 0 && hour_max != 0)
 									{
-										if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
+										if((status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max) ||
+												(status.getCreatedAt().getHours() ==0 && hour_max == 24))
 
 											if(language.equals("") || status.getLang().equals(language))
 												if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-													System.out.println(status.getUser().getName() + ":" +
-															status.getText() +" "+status.getCreatedAt());//inserer dans la bdd
-									}
+													this.getInsert().add(status);									}
 									else //pas de filtre par heure
 										if(language.equals("") || status.getLang().equals(language))
 											if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-												System.out.println(status.getUser().getName() + ":" +
-														status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
-
+												this.getInsert().add(status);
 								}
 							}
 						}
@@ -527,9 +505,9 @@ public class Rest_search extends Search {
 
 			else{
 
-				
+
 				kw_ht = build_kw_and_ht();
-				System.out.println(kw_ht);
+				//System.out.println(kw_ht);
 				Query query = new Query(kw_ht);
 				if(language != "")
 					query.setLang(language);
@@ -546,20 +524,17 @@ public class Rest_search extends Search {
 					for(Status status: tweets){
 						if(hour_min != 0 && hour_max != 0)
 						{
-							if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
+							if((status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max) ||
+									(status.getCreatedAt().getHours() ==0 && hour_max == 24))
 								if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-
-									System.out.println(status.getUser().getName() + ":" +
-											status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
+									this.getInsert().add(status);
 						}
 						else //pas de filtre par heure
 							if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-								System.out.println(status.getUser().getName() + ":" +
-										status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt())+ " "+
-										status.getLang());//inserer dans la bdd
+								this.getInsert().add(status);
 
 					}
-					
+
 					query=result.nextQuery();
 					if(query!=null)
 						result=t.search(query);
@@ -568,10 +543,8 @@ public class Rest_search extends Search {
 		}
 		else
 		{
-			//System.out.println("omg");
 			for(Bounding_box_rest b : bb)
 			{
-				//System.out.println(b.getRadius());
 				kw_ht = build_kw_and_ht();
 				Query query = new Query(kw_ht);
 				if(language != "")
@@ -585,33 +558,29 @@ public class Rest_search extends Search {
 				GeoLocation location = new GeoLocation(b.getCenter_latitude(),b.getCenter_longitude());
 				query.geoCode(location,b.getRadius(), b.getUnit());
 				QueryResult result = t.search(query);
-				
+
 				do{
 					i++;
 					List<Status> tweets = result.getTweets();
-					System.out.println(tweets.size());
+					//System.out.println(tweets.size());
 					for(Status status: tweets){
 						if(hour_min != 0 && hour_max != 0)
 						{
-							if(status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max)
+							if((status.getCreatedAt().getHours() >= hour_min && status.getCreatedAt().getHours() <= hour_max) ||
+									(status.getCreatedAt().getHours() ==0 && hour_max == 24))
 								if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-
-									System.out.println(status.getUser().getName() + ":" +
-											status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt()));//inserer dans la bdd
+									this.getInsert().add(status);
 						}
 						else //pas de filtre par heure
 							if(nb_rt_max ==0 || (status.getRetweetCount() >= nb_rt_min && status.getRetweetCount() <= nb_rt_max) )
-								System.out.println(status.getUser().getName() + ":" +
-										status.getText() +" "+ new SimpleDateFormat("yyyy-MM-dd").format(status.getCreatedAt())+ " "+
-										status.getLang());//inserer dans la bdd
-
+								this.getInsert().add(status);
 					}
 					query=result.nextQuery();
 					if(query!=null)
 						result=t.search(query);
 				}while(query!=null && i<(nb_tweet/100));
-				
-				
+
+
 			}
 		}
 

@@ -1,0 +1,92 @@
+package JavaApp;
+
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue; 
+
+import java.io.FileReader;
+import java.util.Iterator;
+
+import org.json.simple.parser.JSONParser;
+
+import twitter4j.*;
+import twitter4j.auth.AccessToken;
+
+@SuppressWarnings("unused")
+public class Appli {
+
+	public static void main(String[] argv) throws Exception {
+
+		String API="";
+
+		/*****PARSER DU FICHIER DE RECHERCHE****/
+		JSONParser parser = new JSONParser();
+
+		String ap="";
+		JSONArray keywords,retweets, hour,answer_to,users,bb;
+		int number_of_tweet = 0;
+
+		try {
+
+			Object obj = parser.parse(new FileReader(
+					"C:/xampp/htdocs/SSAFProject/Controlers/recherche.json"));
+
+			JSONObject jsonObject = (JSONObject) obj;
+
+			ap = (String) jsonObject.get("API");
+			API = ap;
+
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		/*********************************END PARSER**************************/
+		
+		/*********************************CONNEXION A LA BDD & RECHERCHES******************************/
+		Connection connexion = null;
+		Statement stmt = null;
+		if(API.equals("rest"))
+		{
+			Rest_search r = new Rest_search();
+			r.parse();
+			Insert_class i = new Insert_class();
+			i.setSearch(r);
+			r.setInsert(i);
+			i.insert_parameters();
+			r.search_and_insert();
+
+
+			return;
+		}
+		else
+		{
+			Streaming_search r= new Streaming_search();
+			r.parse();
+			Insert_class i = new Insert_class();
+			i.setSearch(r);
+			r.setInsert(i);
+			//i.insert_parameters();
+			//r.search_and_insert();
+			SimpleDateFormat d = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = d.parse("2015/03/31 00:54:15");
+			System.out.println(date.getHours()==24); //2014/08/06 15:59:48
+		}
+
+
+
+	}
+
+}

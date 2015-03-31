@@ -353,7 +353,6 @@ public class Streaming_search extends Search{
 								}
 							}
 
-				//System.out.println("RAW JSON: " + TwitterObjectFactory.getRawJSON(status));
 			}
 
 			public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
@@ -413,7 +412,7 @@ public class Streaming_search extends Search{
 				int i =0;
 				for(Bounding_box_stream b : this.getBb())
 				{
-					System.out.println(b.getLongitude1()+","+b.getLatitude1());
+					//System.out.println(b.getLongitude1()+","+b.getLatitude1());
 					locations[i][0] = b.getLongitude1();
 					locations[i][1] = b.getLatitude1();
 					locations[i+1][0] = b.getLongitude2();

@@ -63,6 +63,7 @@ public class Appli {
 			Rest_search r = new Rest_search();
 			r.parse();
 			Insert_class i = new Insert_class();
+			Runtime.getRuntime().addShutdownHook(i);
 			i.setSearch(r);
 			r.setInsert(i);
 			i.insert_parameters();
@@ -76,6 +77,7 @@ public class Appli {
 			Streaming_search r= new Streaming_search();
 			r.parse();
 			Insert_class i = new Insert_class();
+			Runtime.getRuntime().addShutdownHook(i);
 			i.setSearch(r);
 			r.setInsert(i);
 			i.insert_parameters();

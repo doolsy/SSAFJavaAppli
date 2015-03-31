@@ -201,18 +201,15 @@ public class Rest_search extends Search {
 
 			number_of_tweet = (String) jsonObject.get("result_limit"); //à traiter
 
-			//System.out.println(search_time);
 			if(keywords != null)
 			{
 				Iterator<String> it = keywords.iterator();
 				while (it.hasNext()) {
-					//System.out.println((String)it.next());
 					String wd = it.next();
 					if(wd.indexOf("#") == 0)
 						this.add_ht(wd);
 					else 
 						this.add_kw(wd);
-					//System.out.print(it1.next() + " ");
 				}
 			}
 
@@ -254,7 +251,6 @@ public class Rest_search extends Search {
 				int i=0;
 				while (it.hasNext()) {
 					hr[i]= it.next().intValue();
-					//System.out.println(it.next());
 					i++;
 				}
 				this.setHour_min(hr[0]);
@@ -336,10 +332,8 @@ public class Rest_search extends Search {
 			//Handle errors for JDBC
 			se.printStackTrace();
 		}catch(Exception e){
-			//Handle errors for Class.forName
 			e.printStackTrace();
 		}finally{
-			//finally block used to close resources
 			try{
 				if(stmt!=null)
 					connexion.close();
@@ -553,7 +547,7 @@ public class Rest_search extends Search {
 					query.setSince(date);
 				if(language != "")
 					query.setLang(language);
-				query.setCount(200);
+				query.setCount(100);
 				int i=0;
 				GeoLocation location = new GeoLocation(b.getCenter_latitude(),b.getCenter_longitude());
 				query.geoCode(location,b.getRadius(), b.getUnit());

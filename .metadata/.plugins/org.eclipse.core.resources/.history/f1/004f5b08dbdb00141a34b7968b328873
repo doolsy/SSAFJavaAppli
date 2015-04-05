@@ -47,7 +47,7 @@ public class Insert_class extends Thread{
 		this.l_tweet = l_tweet;
 	}
 
-	public void insert_parameters(int pid) throws SQLException
+	public void insert_parameters() throws SQLException
 	{
 		Connection connexion = null;
 		Statement stmt = null, stmt1 = null,stmt2 = null;
@@ -244,12 +244,11 @@ public class Insert_class extends Thread{
 				rs = stmt.executeQuery(sql);
 				if(!rs.next())
 				{
-					sql2 = "INSERT INTO \"Search1\" (ut_id,search_id,iua_id,process) values(?,?,?,?)";
+					sql2 = "INSERT INTO \"Search1\" (ut_id,search_id,iua_id) values(?,?,?)";
 					smt = connexion.prepareStatement(sql2);
 					smt.setInt(1, this.getSearch().getUi().getUt_id());
 					smt.setInt(2, id_s);
 					smt.setInt(3, this.getSearch().getUi().getIua_id());
-					smt.setInt(4, pid);
 					smt.executeUpdate();
 				}
 			}
@@ -310,7 +309,7 @@ public class Insert_class extends Thread{
 
 				if(s.isRetweet())
 				{
-					this.add_rt(s.getRetweetedStatus());
+					this.add(s.getRetweetedStatus());
 
 					sql2 = "SELECT * FROM \"User_tweet\" WHERE id_user ="+s.getUser().getId();
 					rs = stmt.executeQuery(sql2);
@@ -645,7 +644,7 @@ public class Insert_class extends Thread{
 
 						if(s.isRetweet())
 						{
-							this.add_rt(s.getRetweetedStatus());
+							this.add(s.getRetweetedStatus());
 
 							sql2 = "SELECT * FROM \"User_tweet\" WHERE id_user ="+s.getUser().getId();
 							rs = stmt.executeQuery(sql2);
@@ -982,7 +981,7 @@ public class Insert_class extends Thread{
 
 						if(s.isRetweet())
 						{
-							add_rt(s.getRetweetedStatus());
+							add(s.getRetweetedStatus());
 
 							sql2 = "SELECT * FROM \"User_tweet\" WHERE id_user ="+s.getUser().getId();
 							rs = stmt.executeQuery(sql2);

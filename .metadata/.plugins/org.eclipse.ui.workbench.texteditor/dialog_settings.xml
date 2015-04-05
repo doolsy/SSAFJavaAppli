@@ -13,16 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="Search1" key="selection"/>
+		<item value="add" key="selection"/>
 		<list key="findhistory">
+			<item value="add"/>
 			<item value="search1"/>
+			<item value="insertp"/>
+			<item value="inser"/>
+			<item value="recher"/>
 			<item value="l_tweet"/>
 			<item value="system.out.println"/>
 			<item value="rs3"/>
-			<item value="catch"/>
-			<item value="catc"/>
-			<item value="s"/>
-			<item value="system.out.pri"/>
 		</list>
 		<list key="replacehistory">
 			<item value="rs2"/>

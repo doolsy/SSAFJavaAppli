@@ -982,7 +982,7 @@ public class Insert_class extends Thread{
 
 						if(s.isRetweet())
 						{
-							add_rt(s.getRetweetedStatus());
+							add(s.getRetweetedStatus());
 
 							sql2 = "SELECT * FROM \"User_tweet\" WHERE id_user ="+s.getUser().getId();
 							rs = stmt.executeQuery(sql2);

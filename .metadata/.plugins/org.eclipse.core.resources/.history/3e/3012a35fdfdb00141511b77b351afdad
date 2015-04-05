@@ -59,19 +59,18 @@ public class Appli {
 		/*********************************CONNEXION A LA BDD & RECHERCHES******************************/
 		Connection connexion = null;
 		Statement stmt = null;
-		String[] parts = ManagementFactory.getRuntimeMXBean().getName().split("@");
 		if(API.equals("rest"))
 		{
-			//		System.out.println(parts[0]);
-
-			Rest_search r = new Rest_search();
-			r.parse();
-			Insert_class i = new Insert_class();
-			Runtime.getRuntime().addShutdownHook(i);
-			i.setSearch(r);
-			r.setInsert(i);
-			i.insert_parameters(Integer.valueOf(parts[0]));
-			r.search_and_insert();
+			String[] parts = ManagementFactory.getRuntimeMXBean().getName().split("@");
+			System.out.println(parts[0]);
+//			Rest_search r = new Rest_search();
+//			r.parse();
+//			Insert_class i = new Insert_class();
+//			Runtime.getRuntime().addShutdownHook(i);
+//			i.setSearch(r);
+//			r.setInsert(i);
+//			i.insert_parameters();
+//			r.search_and_insert();
 
 
 			return;
@@ -84,7 +83,7 @@ public class Appli {
 			Runtime.getRuntime().addShutdownHook(i);
 			i.setSearch(r);
 			r.setInsert(i);
-			i.insert_parameters(Integer.valueOf(parts[0]));
+			i.insert_parameters();
 			r.search_and_insert();
 
 		}

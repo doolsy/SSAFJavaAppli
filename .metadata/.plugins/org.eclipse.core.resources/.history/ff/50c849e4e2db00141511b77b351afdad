@@ -42,7 +42,7 @@ public class Appli {
 		try {
 
 			Object obj = parser.parse(new FileReader(
-					"C:/xampp/htdocs/SSAFProject/Controlers/recherche.json"));
+					"../../Controlers/recherche.json"));
 
 			JSONObject jsonObject = (JSONObject) obj;
 
@@ -55,7 +55,7 @@ public class Appli {
 		}
 
 		/*********************************END PARSER**************************/
-		
+
 		/*********************************CONNEXION A LA BDD & RECHERCHES******************************/
 		Connection connexion = null;
 		Statement stmt = null;
@@ -63,7 +63,7 @@ public class Appli {
 		if(API.equals("rest"))
 		{
 			//		System.out.println(parts[0]);
-
+			System.out.println(System.getProperty("user.dir"));
 			Rest_search r = new Rest_search();
 			r.parse();
 			Insert_class i = new Insert_class();
